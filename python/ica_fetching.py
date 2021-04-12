@@ -5,7 +5,8 @@
 # intermediate CA certs. 
 
 # Run as 
-# python3 python3 ica_fetching.py <file> --num_servers <23> --from_line <100> --server_file <file>
+#  python3 ica_fetching.py file --num_servers 23 --from_line 1 --server_file ../data/umbrella-top-1m.csv_4-5-2021.csv 
+
 
 import sys, os.path
 import socket
@@ -89,6 +90,19 @@ print(args.server_file)
 print(args.from_line) 
 '''
 
+def update_ica_list(icas, ica_certs):
+  for cert in ica_certs: 
+    if not list_contains_cert(icas, cert): # if it does not exist in the list 
+      icas.append(cert)    # only then add it to it
+    '''TODO: Update JSON file
+    print("Subject: CN=", c.get_subject().CN, ", O=", c.get_subject().O, ", C=", c.get_subject().C, 
+    "Issuer: CN=", c.get_issuer().CN, ", O=", c.get_issuer().O, ", C=", c.get_issuer().C, 
+    c.digest("sha256"), 
+    c.subject_name_hash() 
+    #http://pyopenssl.sourceforge.net/pyOpenSSL.html/openssl-x509.html
+    '''
+
+
 #TODO: Delete 
 #dest_list = ["cisco.com", "cisco.com", "google.com", "google.com", "microsoft.com", ]
 
@@ -98,47 +112,45 @@ print ("Fetching ICAs for", args.num_servers, "servers...")
 ica_list = list() # List with distinct ICA certificates
 
 rows = args.num_servers # counter for the number of server to fetch ICAs for
-sfile = args.server_file # the file that contains the servers. 
-if not os.path.isfile(sfile): 
-    print('File does not exist.') # Throw error if the file does not exist.
-else:
-  with open(sfile) as csv_file: # Open and read the file with the servers.
-      csv_reader = csv.reader(csv_file, delimiter=',')
-      for row in csv_reader: 
-          if (int(row[0]) % PROGRESS_PRINT_CTR == 0): # For every PROGRESS_PRINT_CTR servers
-            print(".", end ="", flush=True) # print progress dot 
-          if int(row[0]) > rows: # Exit it you processed the number of servers required
-             break
-          else: 
-             #print("server:", row[1], end =", ")
-             certs = get_certificate_chain(row[1]) # Fetch the ICA cert chain from the server
-             #pprint(certs)
-             #TODO: If certs are empty, then increase rows++ to get one more entry because this was a fluke. 
-             for cert in certs: 
-               if not list_contains_cert(ica_list, cert): # if it does not exist in the list 
-                 ica_list.append(cert)    # only then add it to it
-             '''TODO: Update JSON file
-                print("Subject: CN=", c.get_subject().CN, ", O=", c.get_subject().O, ", C=", c.get_subject().C, 
-                      "Issuer: CN=", c.get_issuer().CN, ", O=", c.get_issuer().O, ", C=", c.get_issuer().C, 
-                      c.digest("sha256"), 
-                      c.subject_name_hash() 
-                      #http://pyopenssl.sourceforge.net/pyOpenSSL.html/openssl-x509.html
-             '''
+if args.server_file: # If passed as input parameter, parse the servers file and fetch ICAs
+  sfile = args.server_file # the file that contains the servers. 
+  if not os.path.isfile(sfile): 
+      print('File does not exist.') # Throw error if the file does not exist.
+  else:
+    with open(sfile) as csv_file: # Open and read the file with the servers.
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        for row in csv_reader: 
+            if (int(row[0]) % PROGRESS_PRINT_CTR == 0): # For every PROGRESS_PRINT_CTR servers
+              print(".", end ="", flush=True) # print progress dot 
+            if int(row[0]) > rows: # Exit it you processed the number of servers required
+               break
+            else: 
+               #print("server:", row[1], end =", ")
+               certs = get_certificate_chain(row[1]) # Fetch the ICA cert chain from the server
+               #pprint(certs)
+               update_ica_list(ica_list, certs)
+               #TODO: If certs are empty, then increase rows++ to get one more entry because this was a fluke. 
 
-#print_certs_list(ica_list)
+
+else: # if only asked to populate the server json, only parse the server entries without any ICAs 
+  jsonFile = open("../data/example.json", "r") # Open the JSON file for reading
+  data = json.load(jsonFile) # Read the JSON into the buffer
+  jsonFile.close() # Close the JSON file
+  for sobj in data: 
+      for attr, value in sobj.items():
+          # print(attr, value)
+          if sobj['ICAS'] == []:
+             certs = get_certificate_chain(sobj['server']) # Fetch the ICA cert chain from the server
+              # print(curr['Subject'])
+          #print(sobj['ICAS'][2])	
+      #print(sobj) 
+  ## Save our changes to JSON file
+  jsonFile = open("../data/example.json", "w")
+  jsonFile.write(json.dumps(data))
+  jsonFile.close()
+
+print_certs_list(ica_list)
 #print_list_cert_count(ica_list)
 
-'''
-jsonFile = open("../data/example.json", "r") # Open the JSON file for reading
-data = json.load(jsonFile) # Read the JSON into the buffer
-jsonFile.close() # Close the JSON file
 
-
-for song in data: 
-    for attribute, value in song.items():
-        print(song['server'])
-        for current in song['ICAS']: 
-          print(current['Subject'])
-        #print(song['ICAS'][2])	
-    #print(song) '''
 
