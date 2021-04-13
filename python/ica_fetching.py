@@ -6,6 +6,8 @@
 
 # Run as 
 #  python3 ica_fetching.py ../data/example2.json --num_servers 5 --server_file ../data/umbrella-top-1m.csv_4-5-2021.csv 
+# or to just update the empty ICAs in the JSON file 
+# python3 ica_fetching.py ../data/example2.json  
 
 
 import sys, os.path
