@@ -102,7 +102,7 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
               print(".", end ="", flush=True) # print progress dot 
             if int(row[0]) - args.line_start > srv_cnt: # Exit it you processed the number of servers required
                break
-            if (not int(row[0]) < args.line_start): 
+            if (not int(row[0]) < args.line_start): # Only start fetching ICAs at the server line passed in. 
                json_str += """ {"Id": \"""" + row[0] +"""\", """
                json_str += """ "Server": \"""" + row[1] +"""\", """
                #print("server:", row[1], end =", ")
@@ -132,27 +132,27 @@ else: # if only asked to populate the server json, only parse the server entries
   jsonFile.close() # Close the JSON file
   updatedf = 0; 
   for sobj in data: 
-      if int(sobj["Id"]) - args.line_start > srv_cnt: # Exit it you processed the number of servers required
-             break
-      #TODO: Add if (not sobj["Id"] < args.line_start): 
+    if int(sobj["Id"]) - args.line_start > srv_cnt: # Exit it you processed the number of servers required
+      break
+    if (not int(sobj["Id"]) < args.line_start): # Only start fetching ICAs at the server line passed in.
       for attr, value in sobj.items():
-          #print(attr, value)
-          #print("++", sobj["ICAS"]) 
-          if attr == 'ICAS' and value == []:
-            print(sobj['Id']+"."+sobj['Server'], end ="-", flush=True) 
-            certs = get_certificate_chain(sobj['Server']) # Fetch the ICA cert chain from the server
-            if not certs == []: 
-              for i in range(len(certs)): 
-                sobj["ICAS"] = [  json.loads(ica_list_to_json(certs)) ]
-              print("U.", end =" ", flush=True) 
-              updatedf+=1
-            else: 
-              print("N.", end =" ", flush=True)
+        #print(attr, value)
+        #print("++", sobj["ICAS"]) 
+        if attr == 'ICAS' and value == []:
+          print(sobj['Id']+"."+sobj['Server'], end ="-", flush=True) 
+          certs = get_certificate_chain(sobj['Server']) # Fetch the ICA cert chain from the server
+          if not certs == []: 
+            for i in range(len(certs)): 
+              sobj["ICAS"] = [ json.loads(ica_list_to_json(certs)) ]
+            print("U.", end =" ", flush=True) 
+            updatedf+=1
+          else: 
+            print("N.", end =" ", flush=True)
       #print(sobj) 
-  ## Save our changes to JSON file  
 
   if updatedf>0:   # Write only if we got more ICAs
     print("== Updated", updatedf, "entries. ==") 
+    ## Save our changes to JSON file  
     jsonFile = open(args.server_ICA_file, "w")
     jsonFile.write(json.dumps(data))
     jsonFile.close()
