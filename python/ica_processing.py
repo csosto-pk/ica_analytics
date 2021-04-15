@@ -69,21 +69,22 @@ for sobj in data:
     print(".", end ="", flush=True) # print progress dot 
   if int(sobj["Id"]) - args.line_start > srv_cnt-1: # Exit it you processed the number of servers required
     break
-  for attr, value in sobj.items():
-    #print(attr, value)
-    #print("++", sobj["ICAS"]) 
-    if attr == 'ICAS': 
-      if value == []: # empty ICA list
-        empty_ica_cntr += 1  # increase the empty counter       
-      else:
-        num_icas = get_list_cert_count(value)
-        if num_icas>3: 
-          print(sobj["Id"], "3 ICAs", end="",flush=True)
-          num_icas_ctrs[3]+=1 # increase the >3ICAs counter
-        else: 
-          num_icas_ctrs[num_icas-1]+=1 # increase 1-3 ICAs counter
-        update_ica_list(ica_list, value)
-  total_ctr+=1  # increase the server counter.
+  if (not int(sobj["Id"]) < args.line_start): # Only start processing at the server line passed in. 
+    for attr, value in sobj.items():
+      #print(attr, value)
+      #print("++", sobj["ICAS"]) 
+      if attr == 'ICAS': 
+        if value == []: # empty ICA list
+          empty_ica_cntr += 1  # increase the empty counter       
+        else:
+          num_icas = get_list_cert_count(value)
+          if num_icas>3: 
+            print(sobj["Id"], "3 ICAs", end="",flush=True)
+            num_icas_ctrs[3]+=1 # increase the >3ICAs counter
+          else: 
+            num_icas_ctrs[num_icas-1]+=1 # increase 1-3 ICAs counter
+          update_ica_list(ica_list, value)
+    total_ctr+=1  # increase the server counter.
 
 print("") # print empty line
 print("Server entries processed:", total_ctr-1)
