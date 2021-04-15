@@ -104,6 +104,7 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
             if int(row[0]) - args.line_start > srv_cnt-1: # Exit it you processed the number of servers required
                break
             if (not int(row[0]) < args.line_start): # Only start fetching ICAs at the server line passed in. 
+               #print(row[0], end ="-", flush=True) # print progress dot 
                json_str += """ {"Id": \"""" + row[0] +"""\", """
                json_str += """ "Server": \"""" + row[1] +"""\", """
                #print("server:", row[1], end =", ")
@@ -114,13 +115,11 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
             #if int(row[0]) < srv_cnt: # If it is the last entry, don't add comma in the json
             #  json_str += json_str + ","
               #TODO: If certs are empty, then increase srv_cnt++ to get one more entry because this was a fluke.
-               if (int(row[0]) % WRITE_CTR == 0): # For every PROGRESS_PRINT_CTR servers
-                 jsonFile = open(args.server_ICA_file, "a")
-                 jsonFile.write(json_str)
-                 jsonFile.close()
-                 if int(row[0]) - args.line_start < srv_cnt-1: # Don't empty the json string in the last iteration,   
-                   json_str = ""        # we will use it to remove the comma to not break json
-  print("") # Print new line
+               if ((int(row[0]) % WRITE_CTR == 0) and (int(row[0]) - args.line_start < srv_cnt-1)): # For every PROGRESS_PRINT_CTR servers, write to file. We don't write to file in the last iteration, because we will use it to remove the last comma to not break json and then write to the json file
+                   jsonFile = open(args.server_ICA_file, "a")
+                   jsonFile.write(json_str)
+                   jsonFile.close()
+                   json_str = ""
   json_str = json_str[:len(json_str)-1] + "]" # Remove uncessary comma that would break json
   jsonFile = open(args.server_ICA_file, "a")
   jsonFile.write(json_str)
