@@ -132,27 +132,30 @@ else: # if only asked to populate the server json, only parse the server entries
   jsonFile.close() # Close the JSON file
   updatedf = 0; 
   for sobj in data: 
-      #TODO: if int(row[0]) - args.line_start > srv_cnt: # Exit it you processed the number of servers required
-             #  break
+      if int(sobj["Id"]) - args.line_start > srv_cnt: # Exit it you processed the number of servers required
+             break
       #TODO: Add if (not sobj["Id"] < args.line_start): 
       for attr, value in sobj.items():
           #print(attr, value)
           #print("++", sobj["ICAS"]) 
           if attr == 'ICAS' and value == []:
-            print(sobj['Server'], end =" ", flush=True) 
+            print(sobj['Id']+"."+sobj['Server'], end ="-", flush=True) 
             certs = get_certificate_chain(sobj['Server']) # Fetch the ICA cert chain from the server
             if not certs == []: 
               for i in range(len(certs)): 
                 sobj["ICAS"] = [  json.loads(ica_list_to_json(certs)) ]
               print("U.", end =" ", flush=True) 
-              updatedf = 1
+              updatedf+=1
             else: 
               print("N.", end =" ", flush=True)
       #print(sobj) 
   ## Save our changes to JSON file  
-  print("") # Print new line
-  if updatedf:   # Write only if we got more ICAs
+
+  if updatedf>0:   # Write only if we got more ICAs
+    print("== Updated", updatedf, "entries. ==") 
     jsonFile = open(args.server_ICA_file, "w")
     jsonFile.write(json.dumps(data))
     jsonFile.close()
+  else: 
+    print("== No entries updated. ==")  
 
