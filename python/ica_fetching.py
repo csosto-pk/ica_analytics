@@ -118,7 +118,7 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
                  jsonFile = open(args.server_ICA_file, "a")
                  jsonFile.write(json_str)
                  jsonFile.close()
-                 if int(row[0]) - args.line_start < srv_cnt: # Don't empty the json string in the last iteration,   
+                 if int(row[0]) - args.line_start < srv_cnt-1: # Don't empty the json string in the last iteration,   
                    json_str = ""        # we will use it to remove the comma to not break json
   print("") # Print new line
   json_str = json_str[:len(json_str)-1] + "]" # Remove uncessary comma that would break json
@@ -134,7 +134,7 @@ else: # if only asked to populate the server json, only parse the server entries
   jsonFile.close() # Close the JSON file
   updatedf = 0; 
   for sobj in data: 
-    if int(sobj["Id"]) - args.line_start > srv_cnt: # Exit it you processed the number of servers required
+    if int(sobj["Id"]) - args.line_start > srv_cnt-1: # Exit it you processed the number of servers required
       break
     if (not int(sobj["Id"]) < args.line_start): # Only start fetching ICAs at the server line passed in.
       for attr, value in sobj.items():
