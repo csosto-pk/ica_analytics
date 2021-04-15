@@ -51,8 +51,10 @@ def get_certificate_chain(host):
            if (leaf_cert.get_subject() != ic.get_subject() and ic.get_subject()!=ic.get_issuer()): 
              #print("  --",ic.get_subject())
              ica_certs_list.append(ic) # add it to the Itermediate CA list
+        #print("+", end="",flush=True)
         return ica_certs_list
     except: 
+        #print("-", end="",flush=True)
         return [] # Return empty list if something went wrong and we didn't get anything back
 
 paramparser = argparse.ArgumentParser(description='Fetch ICAs for a list of servers and store in JSON format.')
