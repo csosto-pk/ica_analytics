@@ -9,7 +9,6 @@
 # or to just update the empty ICAs in the JSON file 
 # python3 ica_fetching.py ../data/example2.json --num_servers 100 --line_start 10
 
-
 import sys, os.path
 import socket
 from OpenSSL import SSL 
@@ -18,7 +17,7 @@ import argparse
 from pprint import pprint
 
 PROGRESS_PRINT_CTR = 10 # To be used to print progress dots as the ICAs are being fetched.
-WRITE_CTR = 5 # To be used to write to file periodically so we don't lose data in case of failure.
+WRITE_CTR = 100 # To be used to write to file periodically so we don't lose data in case of failure.
 
 def get_certificate_chain(host):
     """
@@ -48,7 +47,9 @@ def get_certificate_chain(host):
         cert_chain = s.get_peer_cert_chain() # fetch the cert chain (includes server cert and root)
         for ic in cert_chain: # for each cert in the chain
            # if     it is not the server leaf cert          or  a root CA cert
+           #print(" --",ic.get_subject(),"+",ic.get_issuer())
            if (leaf_cert.get_subject() != ic.get_subject() and ic.get_subject()!=ic.get_issuer()): 
+             #print("  --",ic.get_subject())
              ica_certs_list.append(ic) # add it to the Itermediate CA list
         return ica_certs_list
     except: 
@@ -76,7 +77,7 @@ def ica_list_to_json(ica_certs):
   json_s=""
   for cert in ica_certs: 
       tmp = "".join("/{0:s}={1:s}".format(name.decode(), value.decode()) for name, value in cert.get_subject().get_components()) 
-      json_s = """ { "Subject": \"""" + tmp + """\", """
+      json_s += """ { "Subject": \"""" + tmp + """\", """
       tmp = str(cert.subject_name_hash())
       json_s += """ "SubjDigest": \"""" + tmp + """\", """
       tmp = "".join("/{0:s}={1:s}".format(name.decode(), value.decode()) for name, value in cert.get_issuer().get_components())
@@ -100,7 +101,7 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
         for row in csv_reader: 
             if (int(row[0]) % PROGRESS_PRINT_CTR == 0): # For every PROGRESS_PRINT_CTR servers
               print(".", end ="", flush=True) # print progress dot 
-            if int(row[0]) - args.line_start > srv_cnt: # Exit it you processed the number of servers required
+            if int(row[0]) - args.line_start > srv_cnt-1: # Exit it you processed the number of servers required
                break
             if (not int(row[0]) < args.line_start): # Only start fetching ICAs at the server line passed in. 
                json_str += """ {"Id": \"""" + row[0] +"""\", """
@@ -108,6 +109,7 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
                #print("server:", row[1], end =", ")
                certs = get_certificate_chain(row[1]) # Fetch the ICA cert chain from the server
                #pprint(certs)
+               #print("--", len(certs))
                json_str += """ "ICAS": [""" + ica_list_to_json(certs) + """] },"""
             #if int(row[0]) < srv_cnt: # If it is the last entry, don't add comma in the json
             #  json_str += json_str + ","
