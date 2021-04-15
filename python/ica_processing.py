@@ -78,7 +78,7 @@ for sobj in data:
       else:
         num_icas = get_list_cert_count(value)
         if num_icas>3: 
-          #print(sobj["Id"], "3 ICAs", end="",flush=True)
+          print(sobj["Id"], "3 ICAs", end="",flush=True)
           num_icas_ctrs[3]+=1 # increase the >3ICAs counter
         else: 
           num_icas_ctrs[num_icas-1]+=1 # increase 1-3 ICAs counter
