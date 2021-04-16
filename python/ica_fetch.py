@@ -41,7 +41,7 @@ def get_certificate_chain(host):
         ctx = SSL.Context(SSL.SSLv23_METHOD)
         #timeout = socket.getdefaulttimeout()
         #print("System has default timeout of {} for create_connection".format(timeout))
-        sock = socket.create_connection(dst,timeout=2.0) # 2 seconds to not block too long in case of connection error
+        sock = socket.create_connection(dst,timeout=1.0) # 2 seconds to not block too long in case of connection error
         s = SSL.Connection(ctx, sock)
         sock.settimeout(None) # Bring back to blocking because it returns without any certs
         s.set_connect_state()
@@ -114,7 +114,7 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
                #print(row[0], end ="-", flush=True) # print progress dot 
                json_str += """ {"Id": \"""" + row[0] +"""\", """
                json_str += """ "Server": \"""" + row[1] +"""\", """
-               print("server:", row[1], end =", ", flush=True)
+               #print("server:", row[1], end =", ", flush=True)
                certs = get_certificate_chain(row[1]) # Fetch the ICA cert chain from the server
                #pprint(certs)
                #print("--", len(certs))
@@ -134,6 +134,7 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
 
 else: # if only asked to populate the server json, only parse the server entries in the JSON file without any ICAs 
   print ("Populating empty ICA lists in JSON file...")
+  ## TODO: Was giving errors at some point, not sure why.  missing ICAs
   jsonFile = open(args.server_ICA_file, "r") # Open the JSON file for reading
   data = json.load(jsonFile) # Read the JSON into the buffer
   data_orig_len = len(data) # Read the JSON into the buffer
