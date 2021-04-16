@@ -28,8 +28,13 @@ def get_certificate_chain(host):
         -list of ICA certificates (not leaf or root CA) in the chain 
         -in case of exception (eg. timeout) returns -1
     """
-    ica_certs_list = list()
+    try:
+      socket.gethostbyname(host)
+    except: 
+      #print("=======", end ="", flush=True)
+      return []
 
+    ica_certs_list = list()
     try:
         # Use Sockets and SSL to connect to the server to fetch the required certs 
         dst = (host, 443)
@@ -109,7 +114,7 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
                #print(row[0], end ="-", flush=True) # print progress dot 
                json_str += """ {"Id": \"""" + row[0] +"""\", """
                json_str += """ "Server": \"""" + row[1] +"""\", """
-               #print("server:", row[1], end =", ")
+               print("server:", row[1], end =", ", flush=True)
                certs = get_certificate_chain(row[1]) # Fetch the ICA cert chain from the server
                #pprint(certs)
                #print("--", len(certs))
