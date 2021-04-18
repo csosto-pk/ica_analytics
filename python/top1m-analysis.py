@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-# Run python3 top1m-analysis.py ../data/umbrella/umbrella-top-1m-2021-02-15.csv ../data/umbrella/umbrella-top-1m-2021-03-15.csv --num_servers 100
+# Run python3 top1m-analysis.py ../data/umbrella/umbrella-top-1m-2021-02-15.csv ../data/umbrella/umbrella-top-1m-2021-03-15.csv --num_servers 100 
+#  (sometimes it was getting stuck and it hung without connecting and printing dots and I had to press Control-C to get it to move to the next server)
 
 import csv, os.path
 import argparse

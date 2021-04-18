@@ -83,6 +83,7 @@ print(args.line_start)
 def ica_list_to_json(ica_certs):
   json_s=""
   for cert in ica_certs: 
+      #print(cert.get_subject(),flush=True)
       tmp = "".join("/{0:s}={1:s}".format(name.decode(), value.decode()) for name, value in cert.get_subject().get_components()) 
       json_s += """ { "Subject": \"""" + tmp + """\", """
       tmp = str(cert.subject_name_hash())
@@ -118,6 +119,7 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
                certs = get_certificate_chain(row[1]) # Fetch the ICA cert chain from the server
                #pprint(certs)
                #print("--", len(certs))
+               #print("XXXXX", row[1], end ="-", flush=True) 
                json_str += """ "ICAS": [""" + ica_list_to_json(certs) + """] },"""
             #if int(row[0]) < srv_cnt: # If it is the last entry, don't add comma in the json
             #  json_str += json_str + ","
@@ -148,9 +150,9 @@ else: # if only asked to populate the server json, only parse the server entries
         #print(attr, value)
         #print("++", sobj["ICAS"]) 
         if attr == 'ICAS' and value == []:
-          print(sobj['Id']+"."+sobj['Server'], end ="-", flush=True) 
           certs = get_certificate_chain(sobj['Server']) # Fetch the ICA cert chain from the server
           if not certs == []: 
+            print(sobj['Server'],flush=True)
             for i in range(len(certs)): 
               sobj["ICAS"] = [ json.loads(ica_list_to_json(certs)) ]
             print("U.", end =" ", flush=True) 
