@@ -90,6 +90,8 @@ for line in lines:
         print("Server", prev_domain, "had >3 ICAs.", end=" ",flush=True)
         num_icas_ctrs[3] += 1 # increase the >3 ICAs counter
       else: 
+        #if num_icas==3: # Print servers based on ICA size, only for troublshooting.
+        #  print("Server", prev_domain, "had", num_icas ,"ICAs.", end=" ",flush=True)
         num_icas_ctrs[num_icas-1]+=1 # increase 1-3 ICAs counter
       num_icas = 1 # And start countring ICAs from 1 since we moved in a new server from the one we saw in the last line
       #print("XXX-", num_icas ,"-", prev_domain, "-", jobj['domain'])
@@ -119,14 +121,13 @@ for line in lines:
     total_ctr+=1  # increase the server counter. '''
 
 print("") # print empty line
-print("Server entries processed:", total_ctr-1)
-#TODO: Check if we catch one server that has more than one ICAs. Like for www.moviefone.com
-print("Servers with 1 ICA:", num_icas_ctrs[0], ", 2 ICAs:", num_icas_ctrs[1], 
-      ", 3 ICAs:", num_icas_ctrs[2], ", >3 ICAs:", num_icas_ctrs[3])
+#print("Server entries processed:", total_ctr-1)
+print("Servers with 0 ICAs:", empty_ica_ctr , ", 1 ICA:", num_icas_ctrs[0], ", 2 ICAs:", num_icas_ctrs[1], 
+      ", 3 ICAs:", num_icas_ctrs[2], ", >3 ICAs:", num_icas_ctrs[3], ", Total Servers:", 
+      empty_ica_ctr+num_icas_ctrs[0]+num_icas_ctrs[1]+num_icas_ctrs[2]+num_icas_ctrs[3])
+print("Root CAs sent unnecessarily:", rootCA_ctr)
 #TODO: Check if the distinct CAs are measured properly.
 print("Distinct ICA certs:", get_list_cert_count(ica_list))
-print("Servers without any ICAs:", empty_ica_ctr)
-print("Root CAs sent unnecessarily:", rootCA_ctr)
 
 #print_certs_list(ica_list)
 
