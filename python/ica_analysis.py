@@ -20,14 +20,10 @@ def update_ica_list(icas, new_ica_cert):
     if not list_contains_cert(icas, new_ica_cert): # if it does not exist in the list 
       icas.append(new_ica_cert)    # only then add it to it
 
-# Prints Subject, Issuer, and Digest information of a cert.
-def print_cert(c): 
-   print("Subject:", c['Subject'], ", Issuer:", c['Issuer'], ", Fingerprint:", c['CertDigest'])
-
 # Prints Subject and Issuer information of the certs in a list. 
 def print_certs_list(c_list): 
   for c in c_list:
-     print_cert(c)
+     print("ICA Subject",c)
 
 # Prints number or elements in a list 
 def get_list_cert_count(c_list): 
@@ -61,11 +57,10 @@ lines = file.readlines()
 file.close()
 
 ica_list = list() # List with distinct ICA certificates
-empty_ica_cntr = 0
+empty_ica_ctr = 0
 srv_cnt = args.top # counter for the number of server entries to process.
 total_ctr = 1
 rootCA_ctr = 0
-ctr = 0
 num_icas_ctrs = list(range(4)) # array that stores number of servers found to have 1, 2, 3, or more ICAs.
 for i in range(4):
   num_icas_ctrs[i]=0
@@ -73,34 +68,35 @@ prev_domain=''
 num_icas = 1
 
 for line in lines: 
-  ctr+=1
   jobj = json.loads(line)
   if (int(jobj['alexa_rank']) % PROGRESS_PRINT_CTR == 0): # For every PROGRESS_PRINT_CTR servers
       print(".", end ="", flush=True) # print progress dot 
-
   if jobj['subject_dn'] == jobj['issuer_dn']:  # If Root CA we won't cache it, just count it, it should not be sent in TLS.
     rootCA_ctr += 1 
-    num_icas -= 1                                                       
-  else: 
+    if prev_domain != jobj['domain']: # If the Root CA was seen first we need to not count it in the ICA counter
+      num_icas = 0  
+      #print("===== ",prev_domain, "-", jobj['domain'], num_icas)                                                 
+  else:  # If we are dealing with an ICA 
     update_ica_list(ica_list, jobj['subject_dn']) # Add ICA Subject to the distinct ICA list
     if prev_domain == jobj['domain']: # If this is another ICA entry for the server we saw in the last line
-      #print(jobj['domain'],jobj['subject_dn'])
       num_icas += 1
-    else: 
-      if num_icas>3: 
-        print("Server", prev_domain, "had >3 ICAs", end="",flush=True)
-        num_icas_ctrs[3]+=1 # increase the >3 ICAs counter
-      elif num_icas==0:
-        print("Server", prev_domain, "had 0 ICAs", end="",flush=True)
+      #print("YYY ", num_icas, jobj['domain'],jobj['subject_dn'])
+    else:   # If this is another server from the server we saw in the last line
+      total_ctr += 1
+      if num_icas==0:
+        print("Server", prev_domain, "had 0 ICAs.", end=" ",flush=True)
+        empty_ica_ctr += 1
+      elif num_icas>3: 
+        print("Server", prev_domain, "had >3 ICAs.", end=" ",flush=True)
+        num_icas_ctrs[3] += 1 # increase the >3 ICAs counter
       else: 
         num_icas_ctrs[num_icas-1]+=1 # increase 1-3 ICAs counter
-      num_icas = 1 # And start countring ICAs from 0 since we moved in a new server from the one we saw in the last line
-  if ctr>srv_cnt: 
+      num_icas = 1 # And start countring ICAs from 1 since we moved in a new server from the one we saw in the last line
+      #print("XXX-", num_icas ,"-", prev_domain, "-", jobj['domain'])
+  #print(ctr, jobj['domain'])
+  if total_ctr>srv_cnt: 
     break
   else: 
-    print(ctr, jobj['domain'])
-    if prev_domain != jobj['domain']: # If this is another server from the server we saw in the last line
-      total_ctr += 1
     prev_domain = jobj['domain']
 '''  
   if int(sobj["Id"]) - args.line_start > srv_cnt-1: # Exit it you processed the number of servers required
@@ -111,7 +107,7 @@ for line in lines:
       #print("++", sobj["ICAS"]) 
       if attr == 'ICAS': 
         if value == []: # empty ICA list
-          empty_ica_cntr += 1  # increase the empty counter       
+          empty_ica_ctr += 1  # increase the empty counter       
         else:
           num_icas = get_list_cert_count(value)
           if num_icas>3: 
@@ -129,7 +125,8 @@ print("Servers with 1 ICA:", num_icas_ctrs[0], ", 2 ICAs:", num_icas_ctrs[1],
       ", 3 ICAs:", num_icas_ctrs[2], ", >3 ICAs:", num_icas_ctrs[3])
 #TODO: Check if the distinct CAs are measured properly.
 print("Distinct ICA certs:", get_list_cert_count(ica_list))
-print("Servers without any ICAs:", empty_ica_cntr)
+print("Servers without any ICAs:", empty_ica_ctr)
 print("Root CAs sent unnecessarily:", rootCA_ctr)
 
 #print_certs_list(ica_list)
+
