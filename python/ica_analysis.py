@@ -101,29 +101,27 @@ for line in lines:
   if len(server_set)>srv_cnt-1: 
     break
 
-empty_ica_ctr = 0
-num_icas_ctrs = list(range(4)) # array that stores number of servers found to have 1, 2, 3, or more ICAs.
-for i in range(4):
+
+# array that stores number of servers found to have 0, 1, 2, 3, or more ICAs.
+num_icas_ctrs = list(range(5)) 
+for i in range(5):
   num_icas_ctrs[i]=0
 
+# Adding up ICA counters
 for s in server_set:  
-  if ica_dict[s] == 0: 
-    #print("Server", prev_domain, "had 0 ICAs.", end=" ",flush=True)
-    empty_ica_ctr += 1 
-  elif ica_dict[s] > 3: 
-    #print("Server", prev_domain, "had >3 ICAs.", end=" ",flush=True)
-    num_icas_ctrs[3] += 1 # increase the >3 ICAs counter
+  if ica_dict[s] > 3: 
+    num_icas_ctrs[4] += 1 # increase the >3 ICAs counter
   else: 
     #if num_icas==3: # Print servers based on ICA size, only for troublshooting.
     #  print("Server", prev_domain, "had", num_icas ,"ICAs.", end=" ",flush=True)
-    num_icas_ctrs[ica_dict[s]-1] += 1 # increase 1-3 ICAs counter
+    num_icas_ctrs[ica_dict[s]] += 1 # increase 1-3 ICAs counter
 
 
 print("") # print empty line.
 #TODO: Check if the ICAs numbers are counted correctly
-print("Servers with 0 ICAs:", empty_ica_ctr , ", 1 ICA:", num_icas_ctrs[0], ", 2 ICAs:", num_icas_ctrs[1], 
-      ", 3 ICAs:", num_icas_ctrs[2], ", >3 ICAs:", num_icas_ctrs[3], ", Total Servers:", len(server_set), 
-      "=", empty_ica_ctr+num_icas_ctrs[0]+num_icas_ctrs[1]+num_icas_ctrs[2]+num_icas_ctrs[3], 
+print("Servers with 0 ICAs:", num_icas_ctrs[0] , ", 1 ICA:", num_icas_ctrs[1], ", 2 ICAs:", num_icas_ctrs[2], 
+      ", 3 ICAs:", num_icas_ctrs[3], ", >3 ICAs:", num_icas_ctrs[4], ", Total Servers:", len(server_set), 
+      #"=", num_icas_ctrs[0]+num_icas_ctrs[1]+num_icas_ctrs[2]+num_icas_ctrs[3]+num_icas_ctrs[4], 
       # "-", rootCA_seen_1st,
       )
 print("Root CAs sent unnecessarily:", rootCA_ctr)
