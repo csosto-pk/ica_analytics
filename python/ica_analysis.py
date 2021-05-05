@@ -8,6 +8,8 @@ import argparse
 
 PROGRESS_PRINT_CTR = 50 # To be used to print progress dots as the ICAs are being processed.
 
+#TODO: Clean up functions, names and unused ones. 
+
 # Returns 1 if a certificate exists in a certificate list.
 def list_contains_cert(ica_list, crt):
   for ic in ica_list: 
@@ -21,11 +23,11 @@ def update_ica_list(icas, new_ica_cert):
       icas.append(new_ica_cert)    # only then add it to it
 
       # Just to check if a domain occurs twice but in non back to back entries
-def update_server_set(ss, serv):
-  if serv in ss: 
+def update_set(s, t):
+  if t in s: 
     return 0
   else: 
-    server_set.add(serv)
+    s.add(t)
     return 1
 
 # Prints Subject and Issuer information of the certs in a list. 
@@ -71,7 +73,7 @@ rootCA_seen_1st = 0
 
 server_set = set() 
 ica_dict = {}
-ica_list = list() # List with distinct ICA certificates
+ica_set = set() # List with distinct ICA certificates
 
 for line in lines: 
   jobj = json.loads(line)
@@ -82,15 +84,15 @@ for line in lines:
     rootCA_ctr += 1 
 
     # Just to check if a domain occurs twice but in non back to back entries
-    if update_server_set(server_set, jobj['domain']): 
+    if update_set(server_set, jobj['domain']): 
       ica_dict[jobj['domain']] = 0
       rootCA_seen_1st += 1
                                               
   else:  # If we are dealing with an ICA 
-    update_ica_list(ica_list, jobj['subject_dn']) # Add ICA Subject to the distinct ICA list #TODO: Make this a set so I can make sure they are distinct and I can check if it existed already. 
+    update_set(ica_set, jobj['subject_dn']) # Add ICA Subject to the distinct ICA list 
 
     # Just to check if a domain occurs twice but in non back to back entries
-    if not update_server_set(server_set, jobj['domain']): 
+    if not update_set(server_set, jobj['domain']): 
       #print("Duplicate out of order entry for", jobj['domain'], ", previous entry:", prev_domain)
       ica_dict[jobj['domain']] += 1 
     else: 
@@ -101,14 +103,15 @@ for line in lines:
   if len(server_set)>srv_cnt-1: 
     break
 
-
 # array that stores number of servers found to have 0, 1, 2, 3, or more ICAs.
 num_icas_ctrs = list(range(5)) 
 for i in range(5):
   num_icas_ctrs[i]=0
 
 # Adding up ICA counters
-for s in server_set:  
+for s in server_set: 
+  #if ica_dict[s] == 2: #Only for troubleshooting
+  #  print(s) 
   if ica_dict[s] > 3: 
     num_icas_ctrs[4] += 1 # increase the >3 ICAs counter
   else: 
@@ -116,17 +119,14 @@ for s in server_set:
     #  print("Server", prev_domain, "had", num_icas ,"ICAs.", end=" ",flush=True)
     num_icas_ctrs[ica_dict[s]] += 1 # increase 1-3 ICAs counter
 
-
 print("") # print empty line.
-#TODO: Check if the ICAs numbers are counted correctly
 print("Servers with 0 ICAs:", num_icas_ctrs[0] , ", 1 ICA:", num_icas_ctrs[1], ", 2 ICAs:", num_icas_ctrs[2], 
       ", 3 ICAs:", num_icas_ctrs[3], ", >3 ICAs:", num_icas_ctrs[4], ", Total Servers:", len(server_set), 
       #"=", num_icas_ctrs[0]+num_icas_ctrs[1]+num_icas_ctrs[2]+num_icas_ctrs[3]+num_icas_ctrs[4], 
       # "-", rootCA_seen_1st,
       )
 print("Root CAs sent unnecessarily:", rootCA_ctr)
-#TODO: Check if the distinct CAs are measured properly.
-print("Distinct ICA certs:", get_list_cert_count(ica_list)) 
+print("Distinct ICA certs:", len(ica_set)) 
 
 #print_certs_list(ica_list)
 
