@@ -69,8 +69,8 @@ file.close()
 srv_cnt = args.top # counter for the number of server entries to process.
 total_cntr = 0
 rootCA_cntr = 0
-rootCA_seen_1st = 0 
-empty_subject_dn = 0
+rootCA_seen_1st_cntr = 0 
+empty_subject_dn_cntr = 0
 
 server_set = set() 
 ica_dict = {}
@@ -81,19 +81,18 @@ for line in lines:
   if (int(jobj['alexa_rank']) % PROGRESS_PRINT_cntr == 0): # For every PROGRESS_PRINT_cntr servers
     print(".", end ="", flush=True) # print progress dot 
 
-  if not 'subject_dn' in jobj:   # TODO: Here we need to address the lack of subject_dn, or maybe just count the errors.
-    empty_subject_dn += 1
+  if not 'subject_dn' in jobj:   # TODO: Here we need to address the lack of subject_dn, or maybe just count the errors. 
+    empty_subject_dn_cntr += 1        # TODO: Here we could add a check with "AND" for CA: True so we also disregard no CA certs.
 
-  elif 'subject_dn' in jobj and jobj['subject_dn'] == jobj['issuer_dn']:  # If Root CA we won't cache it, just count it, it should not be sent in TLS.
+  elif jobj['subject_dn'] == jobj['issuer_dn']:  # If Root CA we won't cache it, just count it, it should not be sent in TLS.
     rootCA_cntr += 1 
     # Just to check if a domain occurs twice but in non back to back entries
     if update_set(server_set, jobj['domain']): 
       ica_dict[jobj['domain']] = 0
-      rootCA_seen_1st += 1
+      rootCA_seen_1st_cntr += 1
                                               
   else:  # If we are dealing with an ICA 
-    if 'subject_dn' in jobj: # TODO: Here we need to address the lack of subject_dn, or maybe just count the errors.
-      update_set(ica_set, jobj['subject_dn']) # Add ICA Subject to the distinct ICA list 
+    update_set(ica_set, jobj['subject_dn']) # Add ICA Subject to the distinct ICA list 
 
     # Just to check if a domain occurs twice but in non back to back entries
     if not update_set(server_set, jobj['domain']): 
@@ -130,7 +129,7 @@ print("Servers with 0 ICAs:", num_icas_cntrs[0] , ", 1 ICA:", num_icas_cntrs[1],
       # "-", rootCA_seen_1st,
       )
 print("Root CAs sent:", rootCA_cntr)
-print("Certs with empty Subject DN:", empty_subject_dn)
+print("Certs with empty Subject DN:", empty_subject_dn_cntr)
 print("Distinct ICA certs:", len(ica_set)) 
 
 #print_certs_list(ica_list)
