@@ -108,7 +108,8 @@ for line in lines:
       
       # Just to check if a domain occurs twice but in non back to back entries
       if prev_domain in helper_list: 
-        print("OOOOOOOOOps ", prev_domain, jobj['domain'])
+        #print("OOOOOOOOOps ", prev_domain, jobj['domain'])
+        pass
       else: 
         helper_list.add(prev_domain)
 
@@ -147,7 +148,7 @@ else:
    #if num_icas==3: # Print servers based on ICA size, only for troublshooting.
    #  print("Server", prev_domain, "had", num_icas ,"ICAs.", end=" ",flush=True)
    num_icas_ctrs[num_icas-1]+=1 # increase 1-3 ICAs counter
-
+'''
 print("") # print empty line
 print("Servers with 0 ICAs:", empty_ica_ctr , ", 1 ICA:", num_icas_ctrs[0]-1, ", 2 ICAs:", num_icas_ctrs[1], #-1 because we count the stating empty domain as with 1 ICA.
       ", 3 ICAs:", num_icas_ctrs[2], ", >3 ICAs:", num_icas_ctrs[3], ", Total Servers:", total_ctr, 
@@ -158,6 +159,7 @@ print("Servers with 0 ICAs:", empty_ica_ctr , ", 1 ICA:", num_icas_ctrs[0]-1, ",
 print("Root CAs sent unnecessarily:", rootCA_ctr)
 #TODO: Check if the distinct CAs are measured properly.
 print("Distinct ICA certs:", get_list_cert_count(ica_list)) 
+'''
 
 #print_certs_list(ica_list)
 
