@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # Run as 
-#  python3 ica_analysis.py ../data/censys.io/certs_cert_chain_alexa1M.json --top 100 --line_start 10
+#  python3 ica_analysis.py ../data/censys.io/certs_cert_chain_alexa1M.json --top 100 
 
 import json
 import argparse
@@ -45,15 +45,15 @@ paramparser.add_argument('ICA_JSON_file',
 			help="JSON file that includes the servers and their ICAs.")
 paramparser.add_argument("--top", type=int, nargs='?', default=1000000,
 			help="Number of entries in the JSON file to process. Default is 1M.")
-paramparser.add_argument("--line_start", type=int, nargs='?', default=1,
-			help="Starting entry in the JSON file to process from. Default is 1.")
+#paramparser.add_argument("--line_start", type=int, nargs='?', default=1,
+#			help="Starting entry in the JSON file to process from. Default is 1.")
 args = paramparser.parse_args()
 
 '''# Pring input arguments for testing 
 print(args.server_ICA_file)
 print(args.top)
 print(args.server_file)
-print(args.line_start)
+#print(args.line_start)
 '''
 
 '''
@@ -71,6 +71,7 @@ total_cntr = 0
 rootCA_cntr = 0
 rootCA_seen_1st_cntr = 0 
 empty_subject_dn_cntr = 0
+server_cert_cntr = 0 
 
 server_set = set() 
 ica_dict = {}
@@ -81,8 +82,11 @@ for line in lines:
   if (int(jobj['alexa_rank']) % PROGRESS_PRINT_cntr == 0): # For every PROGRESS_PRINT_cntr servers
     print(".", end ="", flush=True) # print progress dot 
 
-  if not 'subject_dn' in jobj:   # TODO: Here we need to address the lack of subject_dn, or maybe just count the errors. 
-    empty_subject_dn_cntr += 1        # TODO: Here we could add a check with "AND" for CA: True so we also disregard no CA certs.
+  if not 'issuer_dn' in jobj: # TODO: Here we could add a check with for CA: True so we disregard no CA certs.
+    server_cert_cntr += 1
+
+  elif not 'subject_dn' in jobj: # TODO: Here we need to address the lack of subject_dn, or maybe just count the errors. 
+    empty_subject_dn_cntr += 1       
 
   elif jobj['subject_dn'] == jobj['issuer_dn']:  # If Root CA we won't cache it, just count it, it should not be sent in TLS.
     rootCA_cntr += 1 
@@ -129,8 +133,10 @@ print("Servers with 0 ICAs:", num_icas_cntrs[0] , ", 1 ICA:", num_icas_cntrs[1],
       # "-", rootCA_seen_1st,
       )
 print("Root CAs sent:", rootCA_cntr)
+print("Server (not CA) certs in dataset:", server_cert_cntr)
 print("Certs with empty Subject DN:", empty_subject_dn_cntr)
 print("Distinct ICA certs:", len(ica_set)) 
+
 
 #print_certs_list(ica_list)
 
