@@ -33,11 +33,7 @@ def update_set(s, t):
 # Prints Subject and Issuer information of the certs in a list. 
 def print_certs_list(c_list): 
   for c in c_list:
-     print("ICA Subject",c)
-
-# Prints number or elements in a list 
-def get_list_cert_count(c_list): 
-  return len(c_list)
+     print(c)
 
 
 paramparser = argparse.ArgumentParser(description='Process ICA statistics from JSON file.')
@@ -79,14 +75,25 @@ ica_set = set() # List with distinct ICA certificates
 
 for line in lines: 
   jobj = json.loads(line)
+  
   if (int(jobj['alexa_rank']) % PROGRESS_PRINT_cntr == 0): # For every PROGRESS_PRINT_cntr servers
     print(".", end ="", flush=True) # print progress dot 
 
-  if not 'issuer_dn' in jobj: # TODO: Here we could add a check with for CA: True so we disregard no CA certs.
+  if not 'is_ca' in jobj: # TODO: Here we could add a check with for CA: True so we disregard no CA certs.
     server_cert_cntr += 1
+    if update_set(server_set, jobj['domain']): 
+      ica_dict[jobj['domain']] = 0
+    #print(jobj['domain'])
+  elif not jobj['is_ca']: # TODO: Here we could add a check with for CA: True so we disregard no CA certs.
+    #print(jobj['domain'])
+    server_cert_cntr += 1
+    if update_set(server_set, jobj['domain']): 
+      ica_dict[jobj['domain']] = 0
 
   elif not 'subject_dn' in jobj: # TODO: Here we need to address the lack of subject_dn, or maybe just count the errors. 
-    empty_subject_dn_cntr += 1       
+    empty_subject_dn_cntr += 1 
+    if update_set(server_set, jobj['domain']): 
+      ica_dict[jobj['domain']] = 0
 
   elif jobj['subject_dn'] == jobj['issuer_dn']:  # If Root CA we won't cache it, just count it, it should not be sent in TLS.
     rootCA_cntr += 1 
@@ -94,7 +101,7 @@ for line in lines:
     if update_set(server_set, jobj['domain']): 
       ica_dict[jobj['domain']] = 0
       rootCA_seen_1st_cntr += 1
-                                              
+            
   else:  # If we are dealing with an ICA 
     update_set(ica_set, jobj['subject_dn']) # Add ICA Subject to the distinct ICA list 
 
@@ -132,11 +139,13 @@ print("Servers with 0 ICAs:", num_icas_cntrs[0] , ", 1 ICA:", num_icas_cntrs[1],
       #"=", num_icas_cntrs[0]+num_icas_cntrs[1]+num_icas_cntrs[2]+num_icas_cntrs[3]+num_icas_cntrs[4], 
       # "-", rootCA_seen_1st,
       )
-print("Root CAs sent:", rootCA_cntr)
-print("Server (not CA) certs in dataset:", server_cert_cntr)
-print("Certs with empty Subject DN:", empty_subject_dn_cntr)
+print("Root CA certs:", rootCA_cntr, ", non-CA certs:", server_cert_cntr, ", Certs w/o Subject DN:", empty_subject_dn_cntr)
 print("Distinct ICA certs:", len(ica_set)) 
-
-
-#print_certs_list(ica_list)
+# Print statis in CSV format [0 ICAs, 1 ICA, 2 ICAs, 3 ICAs, >3 ICAs, Root CA certs, non-CA certs, Certs w/o Subject, Distinc ICAs]
+print(num_icas_cntrs[0], ",", num_icas_cntrs[1], ",", num_icas_cntrs[2], 
+      ",", num_icas_cntrs[3], ",", num_icas_cntrs[4], ",", len(server_set), 
+      ",", rootCA_cntr, ",", server_cert_cntr, ",", empty_subject_dn_cntr, 
+      ",",len(ica_set)
+      )
+#print_certs_list(ica_set)
 
