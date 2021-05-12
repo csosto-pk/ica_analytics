@@ -15,11 +15,12 @@ def update_set(s, t):
   if t in s: 
     return 0
   else: 
+    #print("Adding ", t, len(s))
     s.add(t)
     return 1
 
-# Prints Subject and Issuer information of the certs in a list. 
-def print_certs_list(c_list): 
+# Prints list objects in separate lines 
+def print_list(c_list): 
   for c in c_list:
      print(c)
 
@@ -141,5 +142,5 @@ if __name__ == "__main__":
         ",", rootCA_cntr, ",", server_cert_cntr, ",", empty_subject_dn_cntr, 
         ",",len(ica_set)
         )
-  #print_certs_list(ica_set)
+  #print_list(ica_set)
 
