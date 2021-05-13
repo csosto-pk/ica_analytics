@@ -8,6 +8,8 @@ import argparse
 import json
 from ica_analysis import update_set 
 
+PROGRESS_PRINT_cntr = 1000 # To be used to print progress dots as the ICAs are being processed.
+
 # Read JSON file into lines 
 def read_file(jf):
   if not os.path.isfile(jf):  
@@ -19,6 +21,7 @@ def read_file(jf):
     file.close()
     return lines 
 
+# Returns the server domains cert and the server domain dictionary with the Alexa/Umbrella ranking as the value.
 def get_server_rankings_from_file(jf, cntr):
   server_set = set() 
   f_server_dict = {}
@@ -30,8 +33,12 @@ def get_server_rankings_from_file(jf, cntr):
       if update_set(server_set, jobj['domain']): # If it is the first time we see the server
         if 'alexa_rank' in jobj:  # If it Alexa
           f_server_dict[jobj['domain']] = jobj['alexa_rank'] # Add the Alexa ranking in the server dictionary 
+          if (int(jobj['alexa_rank']) % PROGRESS_PRINT_cntr == 0): # For every PROGRESS_PRINT_cntr servers
+            print(".", end ="", flush=True) # print progress dot
         else:  # If it is Umbrella
           f_server_dict[jobj['domain']] = jobj['umbrella_rank'] # Add the Umbrella  ranking in the server dictionary 
+          if (int(jobj['umbrella_rank']) % PROGRESS_PRINT_cntr == 0): # For every PROGRESS_PRINT_cntr servers
+            print(".", end ="", flush=True) # print progress dot
       else:  # Otherwise, if we have seen this server before 
         if 'alexa_rank' in jobj: # If it Alexa
           if not f_server_dict[jobj['domain']] == jobj['alexa_rank']: # Alert that two ranking for that server differed
@@ -43,12 +50,51 @@ def get_server_rankings_from_file(jf, cntr):
             break # And Exit
       if len(server_set) == cntr: # Exit when exceeding the maximum server counter
         break 
+  print("")
   return server_set, f_server_dict
+
+# Returns the diff of the rankings of the server domains divided by 1000. For a domain the is in one dictionary and not the other it adds 1000000
+def server_ranking_distance_metric(sdict1, sdict2): 
+  # Always start from the dictionary that has more elements so we don't undercalculate the difference.
+  if len(sdict1) > len (sdict2):  
+    sd1 = sdict1
+    sd2 = sdict2
+  else: 
+    sd1 = sdict2
+    sd2 = sdict1
+  metric = 0
+  for s in sd1: 
+    if (int(sd1[s]) % PROGRESS_PRINT_cntr == 0): # For every PROGRESS_PRINT_cntr servers
+      print("@", end ="", flush=True) # print progress dot
+    if s in sd2: 
+      metric += abs(int(sd1[s])-int(sd2[s]))
+    else: 
+      metric += 1000000
+  print("")
+  return metric / 1000
+
+
+# Returns the % of server difference of the servers domain in the two dictionaries
+def server_server_diff_metric(sdict1, sdict2): 
+  # Always start from the dictionary that has more elements so we don't undercalculate the difference.
+  if len(sdict1) > len (sdict2):  
+    sd1 = sdict1
+    sd2 = sdict2
+  else: 
+    sd1 = sdict2
+    sd2 = sdict1
+  metric = 0
+  for s in sd1: 
+    if (int(sd1[s]) % PROGRESS_PRINT_cntr == 0): # For every PROGRESS_PRINT_cntr servers
+      print("*", end ="", flush=True) # print progress dot
+    if s not in sd2: 
+      metric += 1
+  print("")
+  return metric / len(sd1)
+
 
 
 if __name__ == "__main__":
-
-  PROGRESS_PRINT_CTR = 10
 
   paramparser = argparse.ArgumentParser(description='Analyze and Comprate TopX server datasets.')
   paramparser.add_argument('f1', 
@@ -74,39 +120,20 @@ if __name__ == "__main__":
   #flines = read_file(jf1)
 
   f1_server_set, f1_server_dict = get_server_rankings_from_file(jf1, max_srv)
-  print(f1_server_set)
-  print(f1_server_dict)
+  #print(f1_server_set)
+  #print(f1_server_dict)
   f2_server_set, f2_server_dict = get_server_rankings_from_file(jf2, max_srv)
-  print(f2_server_set)
-  print(f2_server_dict)
+  #print(f2_server_set)
+  #print(f2_server_dict)
 
-  '''
-    with open(jf1) as csv_f: # Open and read the file with the servers.
-      csv_reader = csv.reader(csv_f, delimiter=',')
-      for row in csv_reader: 
-        if (int(row[0])>srv_cnt):
-          break
-        f_set.add(row[1])
-        #print(row[1]) 
-  '''
-  #print(f_set)
 
-  # flines = read_file(jf2)
-  # f1_server_dict = {}
+  print("Alexa-Alexa, Umbrella-Umbrella simple server diff metrics (should be 0): ", server_server_diff_metric(f1_server_dict, f1_server_dict),
+        ",", server_server_diff_metric(f2_server_dict, f2_server_dict))
+  print("Alexa-Umbrella simple server diff metric: ", server_server_diff_metric(f1_server_dict, f2_server_dict))
+  print("Umbrella-Alexa simple server diff metric: ", server_server_diff_metric(f2_server_dict, f1_server_dict))
 
-  '''
-  diff_element_cntr = 0
-  if not os.path.isfile(jf2):  
-    print('File does not exist.') # Throw error if the file does not exist.
-  else:
-    with open(jf2) as csv_f: # Open and read the file with the servers.
-      csv_reader = csv.reader(csv_f, delimiter=',')
-      for row in csv_reader:
-        if (int(row[0])>srv_cnt):
-          break
-        #print(row[1])
-        if not row[1] in f_set: 
-          diff_element_cntr +=1 
+  print("Alexa-Alexa, Umbrella-Umbrella ranking diff metrics (should be 0): ", server_ranking_distance_metric(f1_server_dict, f1_server_dict),
+        ",", server_ranking_distance_metric(f2_server_dict, f2_server_dict))
+  print("Alexa-Umbrella ranking diff metric: ", server_ranking_distance_metric(f1_server_dict, f2_server_dict))
+  print("Umbrella-Alexa ranking diff metric: ", server_ranking_distance_metric(f2_server_dict, f1_server_dict))
 
-  print("Different elements in Top", srv_cnt, ":", diff_element_cntr, "(", diff_element_cntr*100/srv_cnt, "%)")
-'''
