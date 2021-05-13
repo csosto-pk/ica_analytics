@@ -90,7 +90,7 @@ def server_server_diff_metric(sdict1, sdict2):
     if s not in sd2: 
       metric += 1
   print("")
-  return metric / len(sd1)
+  return metric * 100 / len(sd1)
 
 
 
