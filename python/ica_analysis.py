@@ -6,8 +6,6 @@
 import json
 import argparse
 
-PROGRESS_PRINT_cntr = 1000 # To be used to print progress dots as the ICAs are being processed.
-
 #TODO: Clean up functions, names and unused ones. 
 
 # Just to check if a domain occurs twice but in non back to back entries
@@ -26,6 +24,8 @@ def print_list(c_list):
 
 
 if __name__ == "__main__":
+
+  PROGRESS_PRINT_cntr = 1000 # To be used to print progress dots as the ICAs are being processed.
 
   paramparser = argparse.ArgumentParser(description='Process ICA statistics from JSON file.')
   paramparser.add_argument('ICA_JSON_file', 
