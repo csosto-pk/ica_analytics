@@ -71,6 +71,7 @@ def server_ranking_distance_metric(sdict1, sdict2):
     else: 
       metric += 1000000
   print("")
+  #print(metric)
   return metric / 1000
 
 
@@ -90,6 +91,7 @@ def server_server_diff_metric(sdict1, sdict2):
     if s not in sd2: 
       metric += 1
   print("")
+  #print(metric, "-", sd1[s], "-")
   return metric * 100 / len(sd1)
 
 
