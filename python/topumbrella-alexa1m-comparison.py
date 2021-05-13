@@ -127,10 +127,10 @@ if __name__ == "__main__":
   #print(f2_server_dict)
 
 
-  print("Alexa-Alexa, Umbrella-Umbrella simple server diff metrics (should be 0): ", server_server_diff_metric(f1_server_dict, f1_server_dict),
+  print("Alexa-Alexa, Umbrella-Umbrella simple server diff % metrics (should be 0): ", server_server_diff_metric(f1_server_dict, f1_server_dict),
         ",", server_server_diff_metric(f2_server_dict, f2_server_dict))
-  print("Alexa-Umbrella simple server diff metric: ", server_server_diff_metric(f1_server_dict, f2_server_dict))
-  print("Umbrella-Alexa simple server diff metric: ", server_server_diff_metric(f2_server_dict, f1_server_dict))
+  print("Alexa-Umbrella simple server diff % metric: ", server_server_diff_metric(f1_server_dict, f2_server_dict))
+  print("Umbrella-Alexa simple server diff % metric: ", server_server_diff_metric(f2_server_dict, f1_server_dict))
 
   print("Alexa-Alexa, Umbrella-Umbrella ranking diff metrics (should be 0): ", server_ranking_distance_metric(f1_server_dict, f1_server_dict),
         ",", server_ranking_distance_metric(f2_server_dict, f2_server_dict))
