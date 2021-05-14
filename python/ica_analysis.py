@@ -32,15 +32,18 @@ if __name__ == "__main__":
 			help="JSON file that includes the servers and their ICAs.")
   paramparser.add_argument("--top", type=int, nargs='?', default=1000000,
 			help="Number of entries in the JSON file to process. Default is 1M.")
+  paramparser.add_argument("--csv", action='store_true', 
+			help="CSV statistics output.")
+  paramparser.add_argument("--verbose", action='store_true', 
+			help="Verbose output")
   #paramparser.add_argument("--line_start", type=int, nargs='?', default=1,
   #			help="Starting entry in the JSON file to process from. Default is 1.")
   args = paramparser.parse_args()
 
   '''# Pring input arguments for testing 
-  print(args.server_ICA_file)
+  print(args.ICA_JSON_file)
   print(args.top)
-  print(args.server_file)
-  #print(args.line_start)
+  print(args.csv)
   '''
 
   '''
@@ -55,8 +58,8 @@ if __name__ == "__main__":
 
   srv_cnt = args.top # counter for the number of server entries to process.
   total_cntr = 0
-  rootCA_cntr = 0
-  rootCA_seen_1st_cntr = 0 
+  ss_cert_cntr = 0
+  ss_cert_seen_1st_cntr = 0 
   empty_subject_dn_cntr = 0
   server_cert_cntr = 0 
 
@@ -66,14 +69,14 @@ if __name__ == "__main__":
 
   for line in lines: 
     jobj = json.loads(line)
-  
-    '''
-    if (int(jobj['alexa_rank']) % PROGRESS_PRINT_cntr == 0): # For every PROGRESS_PRINT_cntr servers
-      print(".", end ="", flush=True) # print progress dot 
-    '''
+
+    if args.verbose and not args.csv: 
+      if (int(jobj['alexa_rank']) % PROGRESS_PRINT_cntr == 0): # For every PROGRESS_PRINT_cntr servers
+        print(".", end ="", flush=True) # print progress dot 
 
     if not 'is_ca' in jobj: # TODO: Here we could add a check with for CA: True so we disregard no CA certs.
       server_cert_cntr += 1
+      #print(jobj['domain'])
       if update_set(server_set, jobj['domain']): 
         ica_dict[jobj['domain']] = 0
       #print(jobj['domain'])
@@ -88,15 +91,18 @@ if __name__ == "__main__":
       if update_set(server_set, jobj['domain']): 
         ica_dict[jobj['domain']] = 0
 
-    elif jobj['subject_dn'] == jobj['issuer_dn']:  # If Root CA we won't cache it, just count it, it should not be sent in TLS.
-      rootCA_cntr += 1 
+    elif jobj['subject_dn'] == jobj['issuer_dn']:  # If Root CA / self-signed we won't cache it, just count it, it should not be sent in TLS.
+      ss_cert_cntr += 1 
       # Just to check if a domain occurs twice but in non back to back entries
       if update_set(server_set, jobj['domain']): 
         ica_dict[jobj['domain']] = 0
-        rootCA_seen_1st_cntr += 1
+        ss_cert_seen_1st_cntr += 1
             
     else:  # If we are dealing with an ICA 
-      update_set(ica_set, jobj['subject_dn']) # Add ICA Subject to the distinct ICA list 
+      update_set(ica_set, jobj['fingerprint_sha256']) # Add ICA Subject to the distinct ICA list #TODO: Here put in subject_dn
+ 
+      #if jobj['subject_dn'] == 'C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust RSA Certification Authority': #TODO: Delete
+      #  print("===Skata-", jobj['subject_dn'], "-", jobj['issuer_dn'],"-", jobj['subject_dn'] == jobj['issuer_dn'])
 
       # Just to check if a domain occurs twice but in non back to back entries
       if not update_set(server_set, jobj['domain']): 
@@ -126,21 +132,61 @@ if __name__ == "__main__":
       #  print("Server", prev_domain, "had", num_icas ,"ICAs.", end=" ",flush=True)
       num_icas_cntrs[ica_dict[s]] += 1 # increase 1-3 ICAs counter
 
-  '''
-  print("") # print empty line.
-  print("Servers with 0 ICAs:", num_icas_cntrs[0] , ", 1 ICA:", num_icas_cntrs[1], ", 2 ICAs:", num_icas_cntrs[2], 
-        ", 3 ICAs:", num_icas_cntrs[3], ", >3 ICAs:", num_icas_cntrs[4], ", Total Servers:", len(server_set), 
-        #"=", num_icas_cntrs[0]+num_icas_cntrs[1]+num_icas_cntrs[2]+num_icas_cntrs[3]+num_icas_cntrs[4], 
-        # "-", rootCA_seen_1st,
-        )
-  print("Root CA certs:", rootCA_cntr, ", non-CA certs:", server_cert_cntr, ", Certs w/o Subject DN:", empty_subject_dn_cntr)
-  print("Distinct ICA certs:", len(ica_set)) 
-  '''
-  # Print statis in CSV format [0 ICAs, 1 ICA, 2 ICAs, 3 ICAs, >3 ICAs, Root CA certs, non-CA certs, Certs w/o Subject, Distinc ICAs]
-  print(args.ICA_JSON_file, ",", num_icas_cntrs[0], ",", num_icas_cntrs[1], ",", num_icas_cntrs[2], 
-        ",", num_icas_cntrs[3], ",", num_icas_cntrs[4], ",", len(server_set), 
-        ",", rootCA_cntr, ",", server_cert_cntr, ",", empty_subject_dn_cntr, 
-        ",",len(ica_set)
-        )
+  if not args.csv: 
+    print("") # print empty line.
+    print("Servers with 0 ICAs:", num_icas_cntrs[0] , ", 1 ICA:", num_icas_cntrs[1], ", 2 ICAs:", num_icas_cntrs[2], 
+          ", 3 ICAs:", num_icas_cntrs[3], ", >3 ICAs:", num_icas_cntrs[4], ", Total Servers:", len(server_set), 
+          # "=", num_icas_cntrs[0]+num_icas_cntrs[1]+num_icas_cntrs[2]+num_icas_cntrs[3]+num_icas_cntrs[4], 
+          # "-", rootCA_seen_1st,
+          )
+    print("Self-signed certs:", ss_cert_cntr, ", non-CA certs:", server_cert_cntr, ", Certs w/o Subject DN:", empty_subject_dn_cntr)
+    print("Distinct ICA certs:", len(ica_set)) 
+
+  # Print statistics in CSV format [0 ICAs, 1 ICA, 2 ICAs, 3 ICAs, >3 ICAs, # distinct servers, Self-signed certs, non-CA certs, Certs w/o Subject, Distinc ICAs]
+  else: 
+    print(args.ICA_JSON_file, ",", num_icas_cntrs[0], ",", num_icas_cntrs[1], ",", num_icas_cntrs[2], 
+          ",", num_icas_cntrs[3], ",", num_icas_cntrs[4], ",", len(server_set), 
+          ",", ss_cert_cntr, ",", server_cert_cntr, ",", empty_subject_dn_cntr, 
+          ",",len(ica_set)
+          )
   #print_list(ica_set)
 
+  if args.verbose and not args.csv: 
+    # Now let's confirm the ICAs we got are correct 
+    error = 0
+    cntr = 0
+    for line in lines: 
+      jobj = json.loads(line)
+      cntr += 1 
+      if not 'subject_dn' in jobj: # If no subject_dn, the cert should not have been in the ica_set
+        pass 
+      elif not jobj['fingerprint_sha256'] in ica_set: # If the cert is not in the ica_set
+        if not 'is_ca' in jobj:  # it either does not have a BasicContraint CA: True/False
+          pass
+        elif not jobj['is_ca']:  # or is a leaf, non-CA cert with BasicContraint CA: False
+          pass 
+        elif jobj['subject_dn'] == jobj['issuer_dn']: # or is a Root / self-signed cert
+          pass 
+        else:  # Othewise it is an ICA cert, and should be in the ica_set
+          error = 1
+          break
+      else: # If the cert is in the ica_set jobj['subject_dn'] in ica_set
+        if not 'is_ca' in jobj:  # if it does not have a BasicContraint CA: True/False, then it should not have been in the ica_set
+          error = 1
+          break
+        elif not jobj['is_ca']:  # if it is a leaf / non-CA cert with BasicContraint CA: False, then it should not have been in the ica_set
+          error = 1
+          break
+        elif jobj['subject_dn'] == jobj['issuer_dn']: # or is a Root / self-signed cert
+          error = 1
+          break
+        else:  # Othewise it is an ICA cert (unless it was a Root self-signed cert which we are not checking), and should be in the ica_set
+          pass
+      if cntr>srv_cnt-1: 
+        break
+    if error:
+      print("Something went wrong with the ICA set.")
+    else: 
+      print("Checked all certs again. ICA set was right.")
+
+  #print_list(ica_set)
