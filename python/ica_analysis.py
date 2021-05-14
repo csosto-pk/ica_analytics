@@ -142,8 +142,9 @@ if __name__ == "__main__":
     print("Self-signed certs:", ss_cert_cntr, ", non-CA certs:", server_cert_cntr, ", Certs w/o Subject DN:", empty_subject_dn_cntr)
     print("Distinct ICA certs:", len(ica_set)) 
 
-  # Print statistics in CSV format [0 ICAs, 1 ICA, 2 ICAs, 3 ICAs, >3 ICAs, # distinct servers, Self-signed certs, non-CA certs, Certs w/o Subject, Distinc ICAs]
+  # Print statistics in CSV format [0 ICAs, 1 ICA, 2 ICAs, 3 ICAs, >3 ICAs, # distinct servers, Self-signed certs, non-CA certs, Certs w/o Subject, Distinct ICAs]
   else: 
+    #print("0 ICAs, 1 ICA, 2 ICAs, 3 ICAs, >3 ICAs, # distinct servers, Self-signed certs, non-CA certs, Certs w/o Subject, Distinct ICAs")
     print(args.ICA_JSON_file, ",", num_icas_cntrs[0], ",", num_icas_cntrs[1], ",", num_icas_cntrs[2], 
           ",", num_icas_cntrs[3], ",", num_icas_cntrs[4], ",", len(server_set), 
           ",", ss_cert_cntr, ",", server_cert_cntr, ",", empty_subject_dn_cntr, 
