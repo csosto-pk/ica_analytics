@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 
-# This is an original Python program which fetched the intermedite certificates excluding the server and RootCA cert 
-# by connecting to the server live. The server were coming from the Alexa or Umbrella from a list of servers CSV file. 
+# This program is provided only as reference. 
+
+# It is an original Python program which fetched the intermedite certificates excluding the server and RootCA cert 
+# by connecting to the server live. The servers were coming from the Alexa or Umbrella from a list of servers CSV file. 
 # The program stored the servers in a list and prints the list and the number of distinct intermediate CA certs. 
 # As the program was fetching certs we often noticed delays because of TCP timeouts which we tried to address by 
-# setting the TCP socket timeouts.
+# setting the TCP socket timeouts. 
 
 # Since this program was written, the logic of identifying the certificates has changed, and more importantly 
 # we are now using Censys.io historical data to get the certificates. So we are not longer connecting to the servers live 

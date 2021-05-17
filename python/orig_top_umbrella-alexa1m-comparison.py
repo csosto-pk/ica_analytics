@@ -1,10 +1,17 @@
 #!/usr/bin/python3
 
-# Original Top1M file comparison code. 
-# It took the Alexa and Umbrella CSV files as input and was returning their statistical difference %.
+
+# This program is provided only as reference. 
+
+# It is the original Top1M file comparison code. It took the Alexa and Umbrella CSV files as input and was returning 
+# their statistical difference %.
+
+# The program is provided only as reference. 
 
 # Since this program was written, the logic has changed and the new program topumbrella-alexa1m-comparison.py 
-# it the one to use. This program is provided only as reference. 
+# it the one to use. 
+
+
 
 # Run as 
 #   python3 orig_top_umbrella-alexa1m-comparison.py ../data/umbrella/umbrella-top-1m-2021-02-15.csv ../data/umbrella/umbrella-top-1m-2021-03-15.csv --num_servers 100 

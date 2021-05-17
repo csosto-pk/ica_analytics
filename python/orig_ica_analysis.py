@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
-# This is an original Python program which parsed a JSON file which include the CA certificate data extracted from the 
+# This program is provided only as reference. 
+
+# It is an original Python program which parsed a JSON file which include the CA certificate data extracted from the 
 # orig_ica_fetch.py program. Examples of such JSON files exist in the data/orig_fetched directory. The program 
 # would provide information about the Intermediate CAs, the Root CAs and the distinct ICAs identified in the JSON file. 
 
