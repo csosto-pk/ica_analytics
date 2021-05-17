@@ -1,7 +1,15 @@
 #!/usr/bin/python3
 
+# This is an original Python program which parsed a JSON file which include the CA certificate data extracted from the 
+# orig_ica_fetch.py program. Examples of such JSON files exist in the data/orig_fetched directory. The program 
+# would provide information about the Intermediate CAs, the Root CAs and the distinct ICAs identified in the JSON file. 
+
+# Since this program was written, the logic of identifying the intermediate certificates has changed, and more 
+# importantly we are now using Censys.io historical JSON file data which include the ceritificates and we process this 
+# data with the ica_analysis.py program. This program is provided only as reference. 
+
 # Run as 
-#  python3 ica_processing.py ../data/example100.json --num_servers 100 --line_start 10
+#  python3 orig_ica_analysis.py ../data/example100.json --num_servers 100 --line_start 10
 
 import json
 import argparse
@@ -35,6 +43,8 @@ def get_list_cert_count(c_list):
   return len(c_list)
 
 
+
+# Input parameters
 paramparser = argparse.ArgumentParser(description='Process ICA statistics from JSON file.')
 paramparser.add_argument('ICA_JSON_file', 
 			help="JSON file that includes the servers and their ICAs.")

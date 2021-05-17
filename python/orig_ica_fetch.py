@@ -1,13 +1,19 @@
 #!/usr/bin/python3
 
-# This Python program fetches the intermedite certificates excluding the server and RootCA cert) 
-# from a list of servers. It stores them in a list and prints the list and the number of distinct 
-# intermediate CA certs. 
+# This is an original Python program which fetched the intermedite certificates excluding the server and RootCA cert 
+# by connecting to the server live. The server were coming from the Alexa or Umbrella from a list of servers CSV file. 
+# The program stored the servers in a list and prints the list and the number of distinct intermediate CA certs. 
+# As the program was fetching certs we often noticed delays because of TCP timeouts which we tried to address by 
+# setting the TCP socket timeouts.
+
+# Since this program was written, the logic of identifying the certificates has changed, and more importantly 
+# we are now using Censys.io historical data to get the certificates. So we are not longer connecting to the servers live 
+# which was inefficient to begin with. This program is provided only as reference. 
 
 # Run as 
 #  python3 ica_fetching.py ../data/example100.json --server_file ../data/umbrella-top-1m.csv_4-5-2021.csv --num_servers 100 --line_start 10
 # or to just update the empty ICAs in the JSON file 
-# python3 ica_fetching.py ../data/example2.json --num_servers 100 --line_start 10
+#   python3 ica_fetch.py ../data/example2.json --num_servers 100 --line_start 10
 
 import sys, os.path
 import socket
@@ -19,20 +25,14 @@ from pprint import pprint
 PROGRESS_PRINT_CTR = 10 # To be used to print progress dots as the ICAs are being fetched.
 WRITE_CTR = 100 # To be used to write to file periodically so we don't lose data in case of failure.
 
+# Extracts the certificate chain from the provided host.
 def get_certificate_chain(host):
-    """
-    Extracts the certificate chain from the provided host.
-    params:
-        host (str): hostname
-    output:
-        -list of ICA certificates (not leaf or root CA) in the chain 
-        -in case of exception (eg. timeout) returns -1
-    """
+    ''' 
     try:
       socket.gethostbyname(host)
     except: 
-      #print("=======", end ="", flush=True)
       return []
+    '''
 
     ica_certs_list = list()
     try:
@@ -41,7 +41,7 @@ def get_certificate_chain(host):
         ctx = SSL.Context(SSL.SSLv23_METHOD)
         #timeout = socket.getdefaulttimeout()
         #print("System has default timeout of {} for create_connection".format(timeout))
-        sock = socket.create_connection(dst,timeout=1.0) # 2 seconds to not block too long in case of connection error
+        sock = socket.create_connection(dst,timeout=1.0) # 1 seconds to not block too long in case of connection error
         s = SSL.Connection(ctx, sock)
         sock.settimeout(None) # Bring back to blocking because it returns without any certs
         s.set_connect_state()
@@ -51,17 +51,18 @@ def get_certificate_chain(host):
         leaf_cert = s.get_peer_certificate() # fetch the server cert
         cert_chain = s.get_peer_cert_chain() # fetch the cert chain (includes server cert and root)
         for ic in cert_chain: # for each cert in the chain
-           # if     it is not the server leaf cert          or  a root CA cert
+           # if it is not the server leaf cert or  a root CA cert
            #print(" --",ic.get_subject(),"+",ic.get_issuer())
            if (leaf_cert.get_subject() != ic.get_subject() and ic.get_subject()!=ic.get_issuer()): 
              #print("  --",ic.get_subject())
              ica_certs_list.append(ic) # add it to the Itermediate CA list
-        #print("+", end="",flush=True)
         return ica_certs_list
     except: 
-        #print("-", end="",flush=True)
         return [] # Return empty list if something went wrong and we didn't get anything back
 
+
+
+# Input parameters
 paramparser = argparse.ArgumentParser(description='Fetch ICAs for a list of servers and store in JSON format.')
 paramparser.add_argument('server_ICA_file', 
 			help="JSON file to store the servers and their ICAs.")
@@ -80,6 +81,7 @@ print(args.server_file)
 print(args.line_start)
 '''
 
+# Generates the JSON text for the ICA certificate ist
 def ica_list_to_json(ica_certs):
   json_s=""
   for cert in ica_certs: 
@@ -94,6 +96,8 @@ def ica_list_to_json(ica_certs):
       json_s += """ "CertDigest": \"""" + tmp + """\"},"""
   return json_s[:len(json_s)-1] # Remove uncessary comma that would break json
 
+
+
 # Starting 
 srv_cnt = args.num_servers # counter for the number of server to fetch ICAs for
 if args.server_file: # If passed as input parameter, parse the servers file and fetch ICAs
@@ -105,7 +109,7 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
   else:
     with open(sfile) as csv_file: # Open and read the file with the servers.
         csv_reader = csv.reader(csv_file, delimiter=',')
-        jsonFile = open(args.server_ICA_file, "w").close() # Start with empty file. TODO: Need to throw error if it already exists.
+        jsonFile = open(args.server_ICA_file, "w").close() # Start with empty file. TODO: Need to throw error if the file already exists.
         for row in csv_reader: 
             if (int(row[0]) % PROGRESS_PRINT_CTR == 0): # For every PROGRESS_PRINT_CTR servers
               print(".", end ="", flush=True) # print progress dot 
@@ -121,9 +125,7 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
                #print("--", len(certs))
                #print("XXXXX", row[1], end ="-", flush=True) 
                json_str += """ "ICAS": [""" + ica_list_to_json(certs) + """] },"""
-            #if int(row[0]) < srv_cnt: # If it is the last entry, don't add comma in the json
-            #  json_str += json_str + ","
-              #TODO: If certs are empty, then increase srv_cnt++ to get one more entry because this was a fluke.
+               #TODO: If certs are empty, then increase srv_cnt++ to get one more entry because this was a fluke.
                if ((int(row[0]) % WRITE_CTR == 0) and (int(row[0]) - args.line_start < srv_cnt-1)): # For every PROGRESS_PRINT_CTR servers, write to file. We don't write to file in the last iteration, because we will use it to remove the last comma to not break json and then write to the json file
                    jsonFile = open(args.server_ICA_file, "a")
                    jsonFile.write(json_str)
@@ -136,7 +138,7 @@ if args.server_file: # If passed as input parameter, parse the servers file and 
 
 else: # if only asked to populate the server json, only parse the server entries in the JSON file without any ICAs 
   print ("Populating empty ICA lists in JSON file...")
-  ## TODO: Was giving errors at some point, not sure why.  missing ICAs
+  ## It ws as giving errors here at some point, not sure why. 
   jsonFile = open(args.server_ICA_file, "r") # Open the JSON file for reading
   data = json.load(jsonFile) # Read the JSON into the buffer
   data_orig_len = len(data) # Read the JSON into the buffer
@@ -148,7 +150,6 @@ else: # if only asked to populate the server json, only parse the server entries
     if (not int(sobj["Id"]) < args.line_start): # Only start fetching ICAs at the server line passed in.
       for attr, value in sobj.items():
         #print(attr, value)
-        #print("++", sobj["ICAS"]) 
         if attr == 'ICAS' and value == []:
           certs = get_certificate_chain(sobj['Server']) # Fetch the ICA cert chain from the server
           if not certs == []: 
