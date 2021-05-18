@@ -1,27 +1,38 @@
-# /bin/basj
 
-python3 ica_analysis.py ../data/censys.io/certs_alexa/certs_alexa_20200602.json --csv > ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/certs_alexa/certs_alexa_20200707.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/certs_alexa/certs_alexa_20200804.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/certs_alexa/certs_alexa_20200901.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/certs_alexa/certs_alexa_20201006.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/certs_alexa/certs_alexa_20201103.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/certs_alexa/certs_alexa_20201201.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/certs_alexa/certs_alexa_20210101.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/certs_alexa/certs_alexa_20210201.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/certs_alexa/certs_alexa_20210301.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/certs_alexa/certs_alexa_20210401.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/certs_alexa/certs_alexa_20210501.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/cisco_umbrella/certs_cisco_20200602.json --csv >> ../certs_results.csv 
-python3 ica_analysis.py ../data/censys.io/cisco_umbrella/certs_cisco_20200707.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/cisco_umbrella/certs_cisco_20200804.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/cisco_umbrella/certs_cisco_20200901.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/cisco_umbrella/certs_cisco_20201006.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/cisco_umbrella/certs_cisco_20201103.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/cisco_umbrella/certs_cisco_20201201.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/cisco_umbrella/certs_cisco_20210101.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/cisco_umbrella/certs_cisco_20210201.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/cisco_umbrella/certs_cisco_20210301.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/cisco_umbrella/certs_cisco_20210401.json --csv >> ../certs_results.csv
-python3 ica_analysis.py ../data/censys.io/cisco_umbrella/certs_cisco_20210501.json --csv >> ../certs_results.csv
+# /bin/bash
+# Bash script that runs analytics on censys.io JSON files and stored the results in CSV file. 
+
+# It assumes all json files (for Alexa and Cisco Umbrella are stored in two separate directories 
+# (certs_alexa and cisco_umbrella) in the CENSYS_IO_DIR parent directory.
+
+# The results output CSV is in RESULTS_FILE
+# The output CSV columns titles are 
+# [
+#  0 ICAs # of servers, 1 ICA # of servers, 2 ICAs # of servers, 3 ICAs # of servers, >3 ICAs # of servers, 
+#  # distinct servers, Self-signed certs found, non-CA certs found, Certs w/o Subject found, Distinct ICAs found 
+# ]
+
+
+
+#TODO: Change the JSON file directory and the results file as necessary. 
+CENSYS_IO_DIR=../data/censys.io
+RESULTS_FILE=../certs_results.csv
+
+# empty the ouput file first
+echo "" > $RESULTS_FILE
+
+# For every JSON file in the certs_alexa subdirectory
+for fil in $CENSYS_IO_DIR/certs_alexa/*.json
+do 
+  # Run the statistics and output the results
+  python3 ica_analysis.py $fil --csv >> $RESULTS_FILE
+done
+
+# And for every JSON file in the cisco_umbrella subdirectory
+for fil in $CENSYS_IO_DIR/cisco_umbrella/*.json
+do
+  # Run the statistics and output the results
+  python3 ica_analysis.py $fil --csv >> $RESULTS_FILE
+done
+
 
