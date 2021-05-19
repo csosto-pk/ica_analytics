@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 # Run as 
-#  python3 ica_analysis.py ../data/censys.io/certs_cert_chain_alexa1M.json --top 100 --csv --verbose
+#  python3 ica_analysis.py ../data/censys.io/example_umbrella1M.json --top 100 --csv --verbose
+#  python3 ica_analysis.py ../data/censys.io/example_alexa1M.json --top 100 --csv --verbose
 
 import json
 import argparse
