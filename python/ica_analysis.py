@@ -25,7 +25,7 @@ def print_list(c_list):
 
 if __name__ == "__main__":
 
-  PROGRESS_PRINT_cntr = 1000 # To be used to print progress dots as the ICAs are being processed.
+  PROGRESS_PRINT_MODULO = 1000 # To be used to print progress dots as the ICAs are being processed.
 
   paramparser = argparse.ArgumentParser(description='Process ICA statistics from JSON file.')
   paramparser.add_argument('ICA_JSON_file', 
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     jobj = json.loads(line)
 
     if args.verbose and not args.csv: 
-      if (int(jobj['alexa_rank']) % PROGRESS_PRINT_cntr == 0): # For every PROGRESS_PRINT_cntr servers
+      if (int(jobj['alexa_rank']) % PROGRESS_PRINT_MODULO == 0): # For every PROGRESS_PRINT_MODULO servers
         print(".", end ="", flush=True) # print progress dot 
 
     if not 'is_ca' in jobj: # TODO: Here we could add a check with for CA: True so we disregard no CA certs.
