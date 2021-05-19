@@ -161,15 +161,15 @@ if __name__ == "__main__":
   #print(f2_server_dict)
 
   if not args.csv: 
-    #print("\nAlexa-Alexa, Umbrella-Umbrella simple server diff % metrics (should be 0): ", server_count_diff_metric(A_server_dict, A_server_dict),
-    #      ",", server_count_diff_metric(U_server_dict, U_server_dict)) # should be 0 because we are comparing the same files 
+    print("\nAlexa-Alexa, Umbrella-Umbrella simple server diff % metrics (should be 0): ", server_count_diff_metric(A_server_dict, A_server_dict),
+          ",", server_count_diff_metric(U_server_dict, U_server_dict)) # should be 0 because we are comparing the same files 
     print("\nAlexa-Umbrella simple server diff % metric: ", server_count_diff_metric(A_server_dict, U_server_dict))
-    #print("\nUmbrella-Alexa simple server diff % metric: ", server_count_diff_metric(U_server_dict, A_server_dict)) # should be the same as above
+    print("\nUmbrella-Alexa simple server diff % metric: ", server_count_diff_metric(U_server_dict, A_server_dict)) # should be the same as above
   
-    #print("\nAlexa-Alexa, Umbrella-Umbrella ranking diff metrics (should be 0): ", server_ranking_diff_metric(A_server_dict, A_server_dict),
-    #      ",", server_ranking_diff_metric(U_server_dict, U_server_dict)) # should be 0 because we are comparing the same files 
+    print("\nAlexa-Alexa, Umbrella-Umbrella ranking diff metrics (should be 0): ", server_ranking_diff_metric(A_server_dict, A_server_dict),
+          ",", server_ranking_diff_metric(U_server_dict, U_server_dict)) # should be 0 because we are comparing the same files 
     print("\nAlexa-Umbrella ranking diff metric: ", server_ranking_diff_metric(A_server_dict, U_server_dict))
-    #print("\nUmbrella-Alexa ranking diff metric: ", server_ranking_diff_metric(U_server_dict, A_server_dict)) # should be the same as above
+    print("\nUmbrella-Alexa ranking diff metric: ", server_ranking_diff_metric(U_server_dict, A_server_dict)) # should be the same as above
   else: 
     print(jf1, ",", jf2, ",", server_count_diff_metric(A_server_dict, U_server_dict), ",", server_ranking_diff_metric(A_server_dict, U_server_dict))
 
