@@ -30,7 +30,7 @@ if __name__ == "__main__":
   paramparser = argparse.ArgumentParser(description='Process ICA statistics from JSON file.')
   paramparser.add_argument('ICA_JSON_file', 
 			help="JSON file that includes the servers and their ICAs.")
-  paramparser.add_argument("--top", type=int, nargs='?', default=1000000,
+  paramparser.add_argument("--top", type=int, nargs='?', default=1000000, # Process only the top # of servers in the file.
 			help="Number of entries in the JSON file to process. Default is 1M.")
   paramparser.add_argument("--csv", action='store_true', 
 			help="CSV statistics output.")
