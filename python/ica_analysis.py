@@ -75,28 +75,33 @@ if __name__ == "__main__":
       if (int(jobj['alexa_rank']) % PROGRESS_PRINT_MODULO == 0): # For every PROGRESS_PRINT_MODULO servers
         print(".", end ="", flush=True) # print progress dot 
 
+    if 'cisco_domain' in jobj: # Keep the server domain or cisco_domain depending on the data set
+      dmn = jobj['cisco_domain'] # Alexa dataset has domain and cisco_domain. Keep the umbrella one.
+    else: 
+      dmn = jobj['domain'] # Alexa dataset has only domains
+
     if not 'is_ca' in jobj: # TODO: Here we could add a check with for CA: True so we disregard no CA certs.
       server_cert_cntr += 1
-      #print(jobj['domain'])
-      if update_set(server_set, jobj['domain']): 
-        ica_dict[jobj['domain']] = 0
-      #print(jobj['domain'])
+      #print(dmn)
+      if update_set(server_set, dmn): 
+        ica_dict[dmn] = 0
+      #print(dmn)
     elif not jobj['is_ca']: # TODO: Here we could add a check with for CA: True so we disregard no CA certs.
-      #print(jobj['domain'])
+      #print(dmn)
       server_cert_cntr += 1
-      if update_set(server_set, jobj['domain']): 
-        ica_dict[jobj['domain']] = 0
+      if update_set(server_set, dmn): 
+        ica_dict[dmn] = 0
 
     elif not 'subject_dn' in jobj: # TODO: Here we need to address the lack of subject_dn, or maybe just count the errors. 
       empty_subject_dn_cntr += 1 
-      if update_set(server_set, jobj['domain']): 
-        ica_dict[jobj['domain']] = 0
+      if update_set(server_set, dmn): 
+        ica_dict[dmn] = 0
 
     elif jobj['subject_dn'] == jobj['issuer_dn']:  # If Root CA / self-signed we won't cache it, just count it, it should not be sent in TLS.
       ss_cert_cntr += 1 
       # Just to check if a domain occurs twice but in non back to back entries
-      if update_set(server_set, jobj['domain']): 
-        ica_dict[jobj['domain']] = 0
+      if update_set(server_set, dmn): 
+        ica_dict[dmn] = 0
         ss_cert_seen_1st_cntr += 1
             
     else:  # If we are dealing with an ICA 
@@ -106,14 +111,14 @@ if __name__ == "__main__":
       #  print("===Skata-", jobj['subject_dn'], "-", jobj['issuer_dn'],"-", jobj['subject_dn'] == jobj['issuer_dn'])
 
       # Just to check if a domain occurs twice but in non back to back entries
-      if not update_set(server_set, jobj['domain']): 
-        #print("Duplicate out of order entry for", jobj['domain'], ", previous entry:", prev_domain)
-        ica_dict[jobj['domain']] += 1 
+      if not update_set(server_set, dmn): 
+        #print("Duplicate out of order entry for", dmn, ", previous entry:", prev_domain)
+        ica_dict[dmn] += 1 
       else: 
-        ica_dict[jobj['domain']] = 1
+        ica_dict[dmn] = 1
         #print("Server", prev_domain, "-" ,flush=True)
-        #print("XXX-", num_icas ,"-", prev_domain, "-", jobj['domain'])
-    #print(ctr, jobj['domain'])
+        #print("XXX-", num_icas ,"-", prev_domain, "-", dmn)
+    #print(ctr, dmn)
     if len(server_set)>srv_cnt-1: 
       break
 
