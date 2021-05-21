@@ -10,12 +10,12 @@
 # will throw an error when trying to parse the "alexa_rank"/"cisco_rank" rankings in the JSON.
 
 # It returns the statistical differences between the files. There are different metrics it calculates: 
-#   - the simplest one is the difference of the server domains. It calculates the # servers that exist on one 
-#     file but not the other and divides be the sum of the servers in each file. If the input files were the same,  
-#     the metric should be calculated to be 0.
-#   - another metric is the diff of the rankings of the server domains divided by 1000. For servers that exist 
+#   - the simplest one is the difference of the server domains. It calculates % of servers which exist in one 
+#     of the JSON files, but not both. The % of servers not existing in the other file is returned for each 
+#     file differntly. If the input files were the same, the metric should be calculated to be 0.
+#   - another metric is the diff of the rankings of the server domains divided by 1000000. For servers that exist 
 #     in both files it adds the difference of the ranking of these servers. If a server only exists in one file 
-#     it adds a difference of 1,000,000. To lower the metric, it divides it with 1000 in the end. If the input 
+#     it adds a difference of 1,000,000. To lower the metric, it divides it with 1000000 in the end. If the input 
 #     files were the same, the metric should be calculated to be 0.
 
 # Run as 
@@ -82,7 +82,7 @@ def get_server_rankings_from_file(jf, cntr, AU):
 
 # Returns the diff of the rankings of the server domains provided as values and keys respectively in two dictionaries 
 # passed as input. For a domain that is in one dictionary and not the other it adds 1000000, othewise it adds the diff 
-# of the two rankings. The returned metric is divided by 1000 in the end.
+# of the two rankings. The returned metric is divided by 1000000 in the end.
 def server_ranking_diff_metric(sdict1, sdict2): 
   # Always start from the dictionary that has more items so we don't undercalculate the difference.
   if len(sdict1) > len (sdict2):  
@@ -102,12 +102,12 @@ def server_ranking_diff_metric(sdict1, sdict2):
   # For server domains that is in one dictionary and not the other, add 1000000
   metric2 = (server_count_diff(sdict1, sdict2)+server_count_diff(sdict2, sdict1))*1000000 
   #print(metric)
-  return (metric1+metric2) / 1000 # Return the metric divided by 1000 in the end.
+  return (metric1+metric2) / 1000000 # Return the metric divided by 1000000 in the end.
 
 
 # Returns the # of servers that exist in the first dictionary provided as input, but not the second. 
 # The two dictionaries provided as input parameters have the server domain as the key and the 
-# Alexa/Umbreall ranking as value. The rankings are not used for the metric calculation. 
+# Alexa/Umbrella ranking as value. The rankings are not used for the metric calculation. 
 def server_count_diff(d1, d2):
   metric = 0 
   for s in d1: 
@@ -119,14 +119,15 @@ def server_count_diff(d1, d2):
   return metric
 
 
-# Returns the # of servers that exist in one of the two dictionaries provided as input, but not both.
+# Returns the % of servers which exist in one of the two dictionaries provided as input, but not both.
+# The % of servers not existing in the other file is returned for each dictionary differntly. 
 # The two dictionaries provided as input parameters have the server domain as the key and the 
-# Alexa/Umbreall ranking as value. The rankings are not used for the metric calculation.  
+# Alexa/Umbrella ranking as value. The rankings are not used for the metric calculation.  
 def server_count_diff_metric(sdict1, sdict2): 
-  diff = server_count_diff(sdict1, sdict2) # Get the # of servers from the first dictionary which don't exist in the second.
-  diff += server_count_diff(sdict2, sdict1) # Get the # of servers from the second dictionary which don't exist in the first.
+  diff1 = server_count_diff(sdict1, sdict2) # Get the # of servers from the first dictionary which don't exist in the second.
+  diff2 = server_count_diff(sdict2, sdict1) # Get the # of servers from the second dictionary which don't exist in the first.
   # print(diff, ",", (len(sdict1)+len(sdict2)))
-  return diff * 100 / (len(sdict1)+len(sdict2)) # Return metric
+  return diff1*100/len(sdict1), diff2*100/len(sdict2) # Return metrics
 
 
 
@@ -166,15 +167,21 @@ if __name__ == "__main__":
   #print(f2_server_dict)
 
   if not args.csv: 
-    #print("\nAlexa-Alexa, Umbrella-Umbrella simple server diff % metrics (should be 0): ", server_count_diff_metric(A_server_dict, A_server_dict),
-    #      ",", server_count_diff_metric(U_server_dict, U_server_dict)) # should be 0 because we are comparing the same files 
-    print("\nAlexa-Umbrella simple server diff % metric: ", server_count_diff_metric(A_server_dict, U_server_dict))
-    #print("\nUmbrella-Alexa simple server diff % metric: ", server_count_diff_metric(U_server_dict, A_server_dict)) # should be the same as above
+    #df1, df2 = server_count_diff_metric(A_server_dict, A_server_dict)
+    #print("\nAlexa-Alexa simple server diff % metrics (should be 0): ", df1, ",", df2) # should be 0 because we are comparing the same files 
+    #df1, df2 = server_count_diff_metric(U_server_dict, U_server_dict)
+    #print("\nUmbrella-Umbrella, Umbrella-Umbrella simple server diff % metrics (should be 0): ", df1, ",", df2) # should be 0 because we are comparing the same files 
+    df1, df2 = server_count_diff_metric(A_server_dict, U_server_dict)
+    print("\nAlexa-Umbrella, Umbrella-Alexa simple server diff % metric: ", df1, ",", df2)
+    #df1, df2 = server_count_diff_metric(U_server_dict, A_server_dict)
+    #print("\nUmbrella-Alexa, Alexa-Umbrella simple server diff % metric: ", df1, ",", df2) # should be inverse from the above 
   
     #print("\nAlexa-Alexa, Umbrella-Umbrella ranking diff metrics (should be 0): ", server_ranking_diff_metric(A_server_dict, A_server_dict),
     #      ",", server_ranking_diff_metric(U_server_dict, U_server_dict)) # should be 0 because we are comparing the same files 
     print("\nAlexa-Umbrella ranking diff metric: ", server_ranking_diff_metric(A_server_dict, U_server_dict))
     #print("\nUmbrella-Alexa ranking diff metric: ", server_ranking_diff_metric(U_server_dict, A_server_dict)) # should be the same as above
   else: 
-    print(jf1, ",", jf2, ",", server_count_diff_metric(A_server_dict, U_server_dict), ",", server_ranking_diff_metric(A_server_dict, U_server_dict))
+    #print("File1-File2, File1-File2 server diff (%), File2-File1 server diff(%), Ranking diff metric")
+    df1, df2 = server_count_diff_metric(A_server_dict, U_server_dict)
+    print(jf1, ",", jf2, ",", df1, ",", df2, ",", server_ranking_diff_metric(A_server_dict, U_server_dict))
 
