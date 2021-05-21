@@ -2,7 +2,7 @@
 # /bin/bash
 # Bash script that runs analytics on censys.io JSON files and stored the results in CSV file. 
 
-# It assumes all json files (for Alexa and Cisco Umbrella MUST be stored in two separate directories 
+# All json files (for Alexa and Cisco Umbrella) MUST be stored in two separate directories 
 # (certs_alexa and cisco_umbrella) in the CENSYS_IO_DIR parent directory.
 
 # The results output CSV is in RESULTS_FILE
