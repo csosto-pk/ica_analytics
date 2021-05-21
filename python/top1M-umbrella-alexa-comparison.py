@@ -6,7 +6,7 @@
 # It takes two files as input. These are assumed to be the Alexa and Umbrella JSON files extracted from Censys.io 
 # on the same day for more accurate results. 
 
-# The first input file SHOULD contain Alexa rankings. And the second the Umbrella rankings. Otherwise the program 
+# The first input file MUST contain Alexa rankings. And the second the Umbrella rankings. Otherwise the program 
 # will throw an error when trying to parse the "alexa_rank"/"cisco_rank" rankings in the JSON.
 
 # It returns the statistical differences between the files. There are different metrics it calculates: 
