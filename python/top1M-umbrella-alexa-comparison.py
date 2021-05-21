@@ -7,7 +7,7 @@
 # on the same day for more accurate results. 
 
 # The first input file SHOULD contain Alexa rankings. And the second the Umbrella rankings. Otherwise the program 
-# will through an error when trying to parse the "alexa_rank"/"cisco_rank" rankings in the JSON.
+# will throw an error when trying to parse the "alexa_rank"/"cisco_rank" rankings in the JSON.
 
 # It returns the statistics differences between the files. There are different metrics it calculates: 
 #   - the simplest one is the difference of the server domains. It calculates the # servers that exist on one 
