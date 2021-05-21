@@ -1,5 +1,25 @@
 #!/usr/bin/python3
 
+# This program process the Censys.io Alexa and Umbrella JSON files and returns statistics on server domains and 
+# the certificate chains they return. 
+
+# It takes one files as input. That is the Alexa or Umbrella JSON file extracted from Censys.io based on the 
+# Top1M Alexa sites or the Top1M Cisco Umbrella sites on a specific date. The file contains the Alexa 
+# alexa_rank or the Umbrella cisco_rank of each server along with the certificates it returned in its 
+# TLS certificate chain. 
+
+# It returns the 
+#   - 0 ICAs 
+#   - 1 ICA 
+#   - 2 ICAs 
+#   - 3 ICAs 
+#   - >3 ICAs 
+#   - # distinct servers 
+#   - Self-signed certs 
+#   - non-CA certs 
+#   - Certs w/o Subject 
+#   - Distinct ICAs 
+
 # Run as 
 #  python3 ica_analysis.py ../data/censys.io/example_umbrella1M.json --top 100 --csv --verbose
 #  python3 ica_analysis.py ../data/censys.io/example_alexa1M.json --top 100 --csv --verbose
