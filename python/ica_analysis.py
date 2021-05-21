@@ -153,6 +153,7 @@ if __name__ == "__main__":
     #print("0 ICAs, 1 ICA, 2 ICAs, 3 ICAs, >3 ICAs, # distinct servers, Self-signed certs, non-CA certs, Certs w/o Subject, Distinct ICAs")
     print(args.ICA_JSON_file, ",", num_icas_cntrs[0], ",", num_icas_cntrs[1], ",", num_icas_cntrs[2], 
           ",", num_icas_cntrs[3], ",", num_icas_cntrs[4], ",", len(server_set), 
+          #",", num_icas_cntrs[0]+num_icas_cntrs[1]+num_icas_cntrs[2]+num_icas_cntrs[3]+num_icas_cntrs[4], 
           ",", ss_cert_cntr, ",", server_cert_cntr, ",", empty_subject_dn_cntr, 
           ",",len(ica_set)
           )
