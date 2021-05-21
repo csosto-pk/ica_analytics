@@ -49,25 +49,30 @@ def get_server_rankings_from_file(jf, cntr, AU):
     for line in lines: 
       jobj = json.loads(line) # Parse the JSON
 
-      if update_set(server_set, jobj['domain']): # If it is the first time we see the server domain
-        if 'alexa_rank' in jobj and AU == "Alexa":  # If it is Alexa, 
-          f_server_dict[jobj['domain']] = jobj['alexa_rank'] # add the Alexa ranking in the server dictionary 
-          if not args.csv: 
-            if (int(jobj['alexa_rank']) % PROGRESS_PRINT_MODULO == 0): # For every PROGRESS_PRINT_MODULO servers, 
-              print(".", end ="", flush=True) # print progress dot
-        else:  # If it is Umbrella, 
-          f_server_dict[jobj['domain']] = jobj['cisco_rank'] # add the Umbrella  ranking in the server dictionary 
+      if 'cisco_domain' in jobj: # Keep the server domain or cisco_domain depending on the dataset
+        dmn = jobj['cisco_domain'] # The Umbrella dataset has domain and cisco_domain. Keep the cisco_domain.
+      else: 
+        dmn = jobj['domain'] # The Alexa dataset has only domains
+
+      if update_set(server_set, dmn): # If it is the first time we see the server domain
+        if 'cisco_rank' in jobj and AU == "Umbrella":  # If it is Umbrella,  
+          f_server_dict[dmn] = jobj['cisco_rank'] # add the Umbrella ranking in the server dictionary 
           if not args.csv: 
             if (int(jobj['cisco_rank']) % PROGRESS_PRINT_MODULO == 0): # For every PROGRESS_PRINT_MODULO servers, 
               print(".", end ="", flush=True) # print progress dot
+        else:  # If it is Alexa,
+          f_server_dict[dmn] = jobj['alexa_rank'] # add the Alexa ranking in the server dictionary 
+          if not args.csv: 
+            if (int(jobj['alexa_rank']) % PROGRESS_PRINT_MODULO == 0): # For every PROGRESS_PRINT_MODULO servers, 
+              print(".", end ="", flush=True) # print progress dot
       else:  # Otherwise, if we have seen this server before,  
-        if 'alexa_rank' in jobj and AU == "Alexa": # if it is Alexa, 
-          if not f_server_dict[jobj['domain']] == jobj['alexa_rank']: # alert that two rankings for that server differed
-            print("Server", jobj['domain'], "had entries with different Alexa rankings in the dataset. ") 
+        if 'cisco_rank' in jobj and AU == "Umbrella": # if it is Umbrella, 
+          if not f_server_dict[dmn] == jobj['cisco_rank']: # alert that two cisco_rank rankings for that server differed
+            print("Server", dmn, "had entries with different Umbrella rankings in the dataset. ") 
             break # and Exit
-        else: # If it is Umbrella, 
-          if not f_server_dict[jobj['domain']] == jobj['cisco_rank']: # alert that two ranking for that server differed
-            print("Server", jobj['domain'], "had entries with different Umbrella rankings in the dataset. ")
+        else: # If it is Alexa, 
+          if not f_server_dict[dmn] == jobj['alexa_rank']: # alert that two alexa_rank ranking for that server differed
+            print("Server", dmn, "had entries with different Alexa rankings in the dataset. ")
             break # And Exit
       if len(server_set) == cntr: # Exit when exceeding the maximum server counter
         break 
