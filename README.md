@@ -38,7 +38,7 @@ In the [python directory](https://github.com/csosto-pk/ica_analytics/tree/main/p
 
 The program assumes all JSON files (for Alexa and Cisco Umbrella) are stored in two separate directories 
 (certs_alexa and cisco_umbrella) in the CENSYS_IO_DIR 
-[parent directory](https://github.com/csosto-pk/ica_analytics/tree/main/data/censys.io) .
+[parent directory](https://github.com/csosto-pk/ica_analytics/tree/main/data/censys.io).
 
 
 ## Alexa - Cisco Umbrella Comparison
