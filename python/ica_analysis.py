@@ -85,60 +85,64 @@ if __name__ == "__main__":
   for line in lines: 
     jobj = json.loads(line) # Get each JSON line from the dataset
 
-    if args.verbose and not args.csv: # Print profress dots if we are not get CSV output
+    if args.verbose and not args.csv: # Print progress dots if we are not get CSV output
       if (int(jobj['alexa_rank']) % PROGRESS_PRINT_MODULO == 0): # for every PROGRESS_PRINT_MODULO servers
         print(".", end ="", flush=True) 
 
-    if 'cisco_domain' in jobj: # Keep the server domain or cisco_domain depending on the data set
+    if 'cisco_domain' in jobj: # Keep the server domain and ranking depending on the data set
       dmn = jobj['cisco_domain'] # The Umbrella dataset has domain and cisco_domain. Keep that one.
+      rnk = int(jobj['cisco_rank']) # The Umbrella dataset has ranking and cisco_rank. Keep that one.
     else: 
       dmn = jobj['domain'] # The Alexa dataset has only domain. 
+      rnk = int(jobj['alexa_rank']) # The Umbrella dataset has ranking and alexa_rank. Keep that one.
 
-    if not 'is_ca' in jobj: # If BasicConstraints CA: True/False  was not present in the cert then it was a leaf cert, not CA/ICA
-      #print(dmn)
-      server_cert_cntr += 1  # count the leaf cert
-      if update_set(server_set, dmn): # Add the server in the server set so we know we saw that domain.
-        ica_dict[dmn] = 0  # If we had not seen the domain before (was not in the server set) then the ica counter 
-                           # (ica_dict dictionary value for that domain key) for that domain should start from 0 
-                           # because the first cert we just saw was a leaf, and not an ICA cert.
-    elif not jobj['is_ca']: # If BasicConstraints CA: False in the cert then it was a leaf cert, not CA/ICA
-      #print(dmn)
-      server_cert_cntr += 1 # count the leaf cert
-      if update_set(server_set, dmn): # Add the server in the server set so we know we saw that domain.
-        ica_dict[dmn] = 0  # If we had not seen the domain before (was not in the server set) then the ica counter 
-                           # (ica_dict dictionary value for that domain key) for that domain should start from 0 
-                           # because the first cert we just saw was a leaf, and not an ICA cert.
+    if rnk < srv_cnt: # Since data is not in ordered ranking we need to go through the whole set and 
+                      # ignore servers ranked higher than maximum server counter
+      if not 'is_ca' in jobj: # If BasicConstraints CA: True/False  was not present in the cert then it was a leaf cert, not CA/ICA
+        #print(dmn)
+        server_cert_cntr += 1  # count the leaf cert
+        if update_set(server_set, dmn): # Add the server in the server set so we know we saw that domain.
+          ica_dict[dmn] = 0  # If we had not seen the domain before (was not in the server set) then the ica counter 
+                             # (ica_dict dictionary value for that domain key) for that domain should start from 0 
+                             # because the first cert we just saw was a leaf, and not an ICA cert.
+      elif not jobj['is_ca']: # If BasicConstraints CA: False in the cert then it was a leaf cert, not CA/ICA
+        #print(dmn)
+        server_cert_cntr += 1 # count the leaf cert
+        if update_set(server_set, dmn): # Add the server in the server set so we know we saw that domain.
+          ica_dict[dmn] = 0  # If we had not seen the domain before (was not in the server set) then the ica counter 
+                             # (ica_dict dictionary value for that domain key) for that domain should start from 0 
+                             # because the first cert we just saw was a leaf, and not an ICA cert.
 
-    elif not 'subject_dn' in jobj: # If Subject_DN was not present in the cert it is in error, we will not count it. 
-      empty_subject_dn_cntr += 1  # increment the empty DN counter
-      if update_set(server_set, dmn): 
-        ica_dict[dmn] = 0  # If we had not seen the domain before (was not in the server set) then the ica counter 
-                           # (ica_dict dictionary value for that domain key) for that domain should start from 0 
-                           # because the first cert we just saw was wrong, and not an ICA cert.
+      elif not 'subject_dn' in jobj: # If Subject_DN was not present in the cert it is in error, we will not count it. 
+        empty_subject_dn_cntr += 1  # increment the empty DN counter
+        if update_set(server_set, dmn): 
+          ica_dict[dmn] = 0  # If we had not seen the domain before (was not in the server set) then the ica counter 
+                             # (ica_dict dictionary value for that domain key) for that domain should start from 0 
+                             # because the first cert we just saw was wrong, and not an ICA cert.
 
-    elif jobj['subject_dn'] == jobj['issuer_dn']:  # If Root CA / self-signed we won't cache it, just count it. 
-                                                   # It probably should not have not been sent in TLS from the server.
-      ss_cert_cntr += 1  # increment the self-signed cert counter
-      if update_set(server_set, dmn): # Add the server in the server set so we know we saw that domain. 
-        ica_dict[dmn] = 0  # If we had not seen the domain before (was not in the server set) then the ica counter 
-                           # (ica_dict dictionary value for that domain key) for that domain should start from 0 
-                           # because the first cert we just saw was a self-signed, and not an ICA cert.
-        ss_cert_seen_1st_cntr += 1  # count the self-signed certficate seen first in the certificate chain 
+      elif jobj['subject_dn'] == jobj['issuer_dn']:  # If Root CA / self-signed we won't cache it, just count it. 
+                                                     # It probably should not have not been sent in TLS from the server.
+        ss_cert_cntr += 1  # increment the self-signed cert counter
+        if update_set(server_set, dmn): # Add the server in the server set so we know we saw that domain. 
+          ica_dict[dmn] = 0  # If we had not seen the domain before (was not in the server set) then the ica counter 
+                             # (ica_dict dictionary value for that domain key) for that domain should start from 0 
+                             # because the first cert we just saw was a self-signed, and not an ICA cert.
+          ss_cert_seen_1st_cntr += 1  # count the self-signed certficate seen first in the certificate chain 
             
-    else:  # If we are dealing with an ICA certificate 
-      update_set(ica_set, jobj['fingerprint_sha256']) # Add the unique certificate SHA256 fingerprint in the ICA Set.
- 
-      if not update_set(server_set, dmn): # Add the server in the server set so we know we saw that domain. 
-        ica_dict[dmn] += 1 # If we had not seen the domain before (was not in the server set) then the ica counter 
-                           # (ica_dict dictionary value for that domain key) for that domain should start from 1 
-                           # since the first cert we just saw was ICA cert.
-      else: 
-        ica_dict[dmn] = 1  # Else if we had seen the domain before (was not in the server set) then increment the 
-                           # ica counter (ica_dict dictionary value for that domain key) since we just saw one more 
-                           # ICA cert.
-    #print(ctr, dmn)
-    if len(server_set)>srv_cnt-1: # Exit when exceeding the maximum server counter
-      break
+      else:  # If we are dealing with an ICA certificate 
+        update_set(ica_set, jobj['fingerprint_sha256']) # Add the unique certificate SHA256 fingerprint in the ICA Set.
+   
+        if not update_set(server_set, dmn): # Add the server in the server set so we know we saw that domain. 
+          ica_dict[dmn] += 1 # If we had not seen the domain before (was not in the server set) then the ica counter 
+                             # (ica_dict dictionary value for that domain key) for that domain should start from 1 
+                             # since the first cert we just saw was ICA cert.
+        else: 
+          ica_dict[dmn] = 1  # Else if we had seen the domain before (was not in the server set) then increment the 
+                             # ica counter (ica_dict dictionary value for that domain key) since we just saw one more 
+                             # ICA cert.
+      #print(ctr, dmn)
+      if len(server_set)>srv_cnt-1: # Exit when we find more servers that the maximum server counter. 
+        break
 
   # Now we will process the collected data and provide the statistics. 
   num_icas_cntrs = list(range(5))  # Array that stores number of servers found to have 0, 1, 2, 3, or more ICAs.
@@ -175,7 +179,7 @@ if __name__ == "__main__":
           )
   #print_list(ica_set)
 
-  # IF verbose output requested, then run through the collected data as a sanity check to confirm we did not make a mistake.
+  # If verbose output requested, then run through the collected data as a sanity check to confirm we did not make a mistake.
   if args.verbose and not args.csv: 
     # Now let's confirm the ICAs we got are correct 
     error = 0
@@ -183,32 +187,39 @@ if __name__ == "__main__":
     for line in lines: 
       jobj = json.loads(line)  # Get each JSON line from the dataset
       cntr += 1 
-      if not 'subject_dn' in jobj: # If no subject_dn, the cert should not have been in the ica_set, disregard
-        pass 
-      elif not jobj['fingerprint_sha256'] in ica_set: # If the cert is not in the ica_set
-        if not 'is_ca' in jobj:  # it either does not have a BasicContraint CA: True/False
-          pass
-        elif not jobj['is_ca']:  # or is a leaf, non-CA cert with BasicContraint CA: False
+      if 'cisco_domain' in jobj: # Keep the ranking depending on the data set
+        rnk = int(jobj['cisco_rank']) # The Umbrella dataset has ranking and cisco_rank. Keep that one.
+      else: 
+        rnk = int(jobj['alexa_rank']) # The Umbrella dataset has ranking and alexa_rank. Keep that one.
+      if rnk < srv_cnt: # Since data is not in ordered ranking we need to go through the whole set and 
+                        # ignore servers ranked higher than maximum server counter
+        if not 'subject_dn' in jobj: # If no subject_dn, the cert should not have been in the ica_set, disregard
           pass 
-        elif jobj['subject_dn'] == jobj['issuer_dn']: # or is a Root / self-signed cert
-          pass 
-        else:  # Othewise it is an ICA cert, and should have been in the ica_set
-          error = 1
+        elif not jobj['fingerprint_sha256'] in ica_set: # If the cert is not in the ica_set
+          if not 'is_ca' in jobj:  # it either does not have a BasicContraint CA: True/False
+            pass
+          elif not jobj['is_ca']:  # or is a leaf, non-CA cert with BasicContraint CA: False
+            pass 
+          elif jobj['subject_dn'] == jobj['issuer_dn']: # or is a Root / self-signed cert
+            pass 
+          else:  # Othewise it is an ICA cert, and should have been in the ica_set
+            error = 1
+            break
+        else: # If the cert is in the ica_set 
+          if not 'is_ca' in jobj:  # if it does not have a BasicContraint CA: True/False, then it should not have been in the ica_set
+            error = 1
+            break
+          elif not jobj['is_ca']:  # if it is a leaf / non-CA cert with BasicContraint CA: False, then it should not have been in the ica_set
+            error = 1
+            break
+          elif jobj['subject_dn'] == jobj['issuer_dn']: # if it is a Root / self-signed cert, then it should not have been in the ica_set
+            error = 1
+            break
+          else:  # Othewise it is an ICA cert, and should be in the ica_set
+            pass
+        if cntr>srv_cnt-1: # Exit when we find more servers that the maximum server counter.
           break
-      else: # If the cert is in the ica_set 
-        if not 'is_ca' in jobj:  # if it does not have a BasicContraint CA: True/False, then it should not have been in the ica_set
-          error = 1
-          break
-        elif not jobj['is_ca']:  # if it is a leaf / non-CA cert with BasicContraint CA: False, then it should not have been in the ica_set
-          error = 1
-          break
-        elif jobj['subject_dn'] == jobj['issuer_dn']: # if it is a Root / self-signed cert, then it should not have been in the ica_set
-          error = 1
-          break
-        else:  # Othewise it is an ICA cert, and should be in the ica_set
-          pass
-      if cntr>srv_cnt-1: # Exit when exceeding the maximum server counter
-        break
+
     if error:
       print("Something went wrong with the ICA set.")
     else: 
