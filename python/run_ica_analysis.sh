@@ -12,11 +12,19 @@
 #  # distinct servers, Self-signed certs found, non-CA certs found, Certs w/o Subject found, Distinct ICAs found 
 # ]
 
-
+# Run as 
+#  ./run_ica_analysis.sh 1000000
 
 #TODO: Change the JSON file directory and the results file as necessary. 
 CENSYS_IO_DIR=../data/censys.io
 RESULTS_FILE=../certs_results.csv
+
+if [ $# -eq 0 ]
+  then
+    t=1000000
+else 
+    t=$1
+fi
 
 # empty the ouput file first
 echo "" > $RESULTS_FILE
@@ -25,14 +33,14 @@ echo "" > $RESULTS_FILE
 for fil in $CENSYS_IO_DIR/certs_alexa/*.json
 do 
   # Run the statistics and output the results
-  python3 ica_analysis.py $fil --csv >> $RESULTS_FILE
+  python3 ica_analysis.py $fil --top $t --csv >> $RESULTS_FILE
 done
 
 # And for every JSON file in the cisco_umbrella subdirectory
 for fil in $CENSYS_IO_DIR/cisco_umbrella/*.json
 do
   # Run the statistics and output the results
-  python3 ica_analysis.py $fil --csv >> $RESULTS_FILE
+  python3 ica_analysis.py $fil --top $t --csv >> $RESULTS_FILE
 done
 
 
