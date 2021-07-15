@@ -1,0 +1,99 @@
+~Top 1K 
+../data/censys.io/certs_alexa/certs_alexa_20200602.json , 0 , 720 , 159 , 82 , 2 , 963 , 165 , 8 , 0 , 110
+../data/censys.io/certs_alexa/certs_alexa_20200707.json , 0 , 747 , 148 , 71 , 0 , 966 , 148 , 3 , 0 , 103
+../data/censys.io/certs_alexa/certs_alexa_20200804.json , 0 , 741 , 146 , 69 , 1 , 957 , 159 , 8 , 0 , 100
+../data/censys.io/certs_alexa/certs_alexa_20200901.json , 0 , 710 , 161 , 86 , 0 , 957 , 182 , 4 , 0 , 111
+../data/censys.io/certs_alexa/certs_alexa_20201006.json , 1 , 710 , 163 , 76 , 0 , 950 , 173 , 7 , 0 , 106
+../data/censys.io/certs_alexa/certs_alexa_20201103.json , 1 , 701 , 157 , 88 , 0 , 947 , 168 , 6 , 0 , 103
+../data/censys.io/certs_alexa/certs_alexa_20201201.json , 1 , 714 , 153 , 86 , 0 , 954 , 168 , 4 , 0 , 111
+../data/censys.io/certs_alexa/certs_alexa_20210101.json , 0 , 695 , 151 , 80 , 0 , 926 , 159 , 5 , 0 , 104
+../data/censys.io/certs_alexa/certs_alexa_20210201.json , 1 , 703 , 156 , 80 , 0 , 940 , 146 , 3 , 0 , 105
+../data/censys.io/certs_alexa/certs_alexa_20210301.json , 0 , 688 , 149 , 96 , 0 , 933 , 147 , 4 , 0 , 99
+../data/censys.io/certs_alexa/certs_alexa_20210401.json , 0 , 670 , 154 , 92 , 0 , 916 , 153 , 4 , 0 , 105
+../data/censys.io/certs_alexa/certs_alexa_20210501.json , 0 , 564 , 137 , 51 , 0 , 752 , 126 , 5 , 0 , 103
+../data/censys.io/cisco_umbrella/certs_cisco_20200602.json , 0 , 779 , 186 , 119 , 0 , 1084 , 153 , 4 , 0 , 85
+../data/censys.io/cisco_umbrella/certs_cisco_20200707.json , 0 , 759 , 164 , 109 , 1 , 1033 , 135 , 5 , 0 , 91
+../data/censys.io/cisco_umbrella/certs_cisco_20200804.json , 0 , 733 , 167 , 107 , 1 , 1008 , 151 , 4 , 0 , 93
+../data/censys.io/cisco_umbrella/certs_cisco_20200901.json , 0 , 690 , 147 , 105 , 1 , 943 , 134 , 5 , 0 , 93
+../data/censys.io/cisco_umbrella/certs_cisco_20201006.json , 0 , 763 , 160 , 121 , 1 , 1045 , 135 , 6 , 0 , 93
+../data/censys.io/cisco_umbrella/certs_cisco_20201103.json , 0 , 715 , 146 , 108 , 0 , 969 , 125 , 3 , 0 , 95
+../data/censys.io/cisco_umbrella/certs_cisco_20201201.json , 0 , 680 , 140 , 114 , 0 , 934 , 114 , 2 , 0 , 100
+../data/censys.io/cisco_umbrella/certs_cisco_20210101.json , 0 , 714 , 139 , 116 , 0 , 969 , 121 , 4 , 0 , 104
+../data/censys.io/cisco_umbrella/certs_cisco_20210201.json , 0 , 669 , 124 , 102 , 1 , 896 , 112 , 4 , 0 , 96
+../data/censys.io/cisco_umbrella/certs_cisco_20210301.json , 0 , 677 , 133 , 97 , 0 , 907 , 112 , 4 , 0 , 98
+../data/censys.io/cisco_umbrella/certs_cisco_20210401.json , 0 , 707 , 141 , 123 , 0 , 971 , 115 , 3 , 0 , 97
+../data/censys.io/cisco_umbrella/certs_cisco_20210501.json , 0 , 710 , 131 , 123 , 0 , 964 , 112 , 4 , 0 , 95
+
+~Top 10K 
+../data/censys.io/certs_alexa/certs_alexa_20200602.json , 3 , 7515 , 1780 , 860 , 9 , 10167 , 1768 , 67 , 0 , 244
+../data/censys.io/certs_alexa/certs_alexa_20200707.json , 9 , 7776 , 1673 , 845 , 7 , 10310 , 1625 , 70 , 0 , 227
+../data/censys.io/certs_alexa/certs_alexa_20200804.json , 3 , 7774 , 1684 , 848 , 7 , 10316 , 1630 , 61 , 0 , 218
+../data/censys.io/certs_alexa/certs_alexa_20200901.json , 5 , 7558 , 1762 , 907 , 6 , 10238 , 1765 , 65 , 0 , 239
+../data/censys.io/certs_alexa/certs_alexa_20201006.json , 6 , 8436 , 1877 , 1065 , 8 , 11392 , 1852 , 74 , 0 , 241
+../data/censys.io/certs_alexa/certs_alexa_20201103.json , 4 , 7510 , 1645 , 932 , 8 , 10099 , 1689 , 70 , 0 , 252
+../data/censys.io/certs_alexa/certs_alexa_20201201.json , 5 , 7568 , 1623 , 992 , 7 , 10195 , 1662 , 79 , 0 , 245
+../data/censys.io/certs_alexa/certs_alexa_20210101.json , 7 , 7585 , 1639 , 905 , 6 , 10142 , 1576 , 81 , 0 , 230
+../data/censys.io/certs_alexa/certs_alexa_20210201.json , 2 , 7339 , 1513 , 848 , 6 , 9708 , 1434 , 62 , 0 , 242
+../data/censys.io/certs_alexa/certs_alexa_20210301.json , 7 , 7310 , 1523 , 859 , 7 , 9706 , 1444 , 62 , 0 , 235
+../data/censys.io/certs_alexa/certs_alexa_20210401.json , 5 , 7465 , 1661 , 1001 , 6 , 10138 , 1591 , 77 , 0 , 227
+../data/censys.io/certs_alexa/certs_alexa_20210501.json , 6 , 7390 , 1588 , 749 , 7 , 9740 , 1468 , 65 , 0 , 233
+../data/censys.io/cisco_umbrella/certs_cisco_20200602.json , 6 , 7666 , 1730 , 904 , 4 , 10310 , 1911 , 59 , 0 , 192
+../data/censys.io/cisco_umbrella/certs_cisco_20200707.json , 3 , 7462 , 1595 , 824 , 8 , 9892 , 1816 , 49 , 0 , 188
+../data/censys.io/cisco_umbrella/certs_cisco_20200804.json , 2 , 7615 , 1544 , 827 , 7 , 9995 , 1802 , 51 , 0 , 175
+../data/censys.io/cisco_umbrella/certs_cisco_20200901.json , 2 , 7432 , 1543 , 843 , 6 , 9826 , 1757 , 43 , 0 , 176
+../data/censys.io/cisco_umbrella/certs_cisco_20201006.json , 5 , 8230 , 1758 , 975 , 9 , 10977 , 1975 , 63 , 0 , 199
+../data/censys.io/cisco_umbrella/certs_cisco_20201103.json , 4 , 7635 , 1546 , 950 , 4 , 10139 , 1817 , 53 , 0 , 192
+../data/censys.io/cisco_umbrella/certs_cisco_20201201.json , 3 , 7577 , 1586 , 919 , 6 , 10091 , 1745 , 55 , 0 , 197
+../data/censys.io/cisco_umbrella/certs_cisco_20210101.json , 3 , 7652 , 1638 , 910 , 2 , 10205 , 1779 , 69 , 0 , 205
+../data/censys.io/cisco_umbrella/certs_cisco_20210201.json , 5 , 8521 , 1695 , 951 , 3 , 11175 , 1773 , 69 , 0 , 198
+../data/censys.io/cisco_umbrella/certs_cisco_20210301.json , 0 , 8534 , 1736 , 949 , 4 , 11223 , 1777 , 67 , 0 , 203
+../data/censys.io/cisco_umbrella/certs_cisco_20210401.json , 5 , 9420 , 2008 , 1253 , 5 , 12691 , 2159 , 80 , 0 , 205
+../data/censys.io/cisco_umbrella/certs_cisco_20210501.json , 3 , 9231 , 2017 , 1254 , 6 , 12511 , 2069 , 75 , 0 , 195
+
+~Top 100K 
+../data/censys.io/certs_alexa/certs_alexa_20200602.json , 144 , 80327 , 17949 , 5658 , 91 , 104169 , 12833 , 744 , 0 , 456
+../data/censys.io/certs_alexa/certs_alexa_20200707.json , 254 , 82481 , 17203 , 5395 , 99 , 105432 , 11945 , 880 , 0 , 417
+../data/censys.io/certs_alexa/certs_alexa_20200804.json , 190 , 81933 , 17254 , 5410 , 70 , 104857 , 11887 , 806 , 0 , 401
+../data/censys.io/certs_alexa/certs_alexa_20200901.json , 163 , 76711 , 16573 , 5543 , 69 , 99059 , 11961 , 751 , 0 , 438
+../data/censys.io/certs_alexa/certs_alexa_20201006.json , 134 , 80895 , 17969 , 6379 , 71 , 105448 , 13332 , 796 , 0 , 453
+../data/censys.io/certs_alexa/certs_alexa_20201103.json , 108 , 78128 , 15913 , 5900 , 67 , 100116 , 12150 , 682 , 0 , 429
+../data/censys.io/certs_alexa/certs_alexa_20201201.json , 102 , 76846 , 16188 , 5866 , 74 , 99076 , 11286 , 751 , 0 , 418
+../data/censys.io/certs_alexa/certs_alexa_20210101.json , 205 , 87390 , 19046 , 6420 , 86 , 113147 , 12421 , 912 , 0 , 439
+../data/censys.io/certs_alexa/certs_alexa_20210201.json , 181 , 83471 , 17301 , 5965 , 79 , 106997 , 11447 , 807 , 0 , 403
+../data/censys.io/certs_alexa/certs_alexa_20210301.json , 118 , 84182 , 17990 , 6098 , 73 , 108461 , 11968 , 778 , 0 , 416
+../data/censys.io/certs_alexa/certs_alexa_20210401.json , 170 , 86677 , 18462 , 7418 , 95 , 112822 , 13048 , 789 , 0 , 416
+../data/censys.io/certs_alexa/certs_alexa_20210501.json , 107 , 82494 , 17822 , 5533 , 67 , 106023 , 12044 , 706 , 0 , 401
+../data/censys.io/cisco_umbrella/certs_cisco_20200602.json , 52 , 56981 , 13216 , 5171 , 47 , 75467 , 11795 , 465 , 0 , 372
+../data/censys.io/cisco_umbrella/certs_cisco_20200707.json , 43 , 54480 , 11887 , 4860 , 54 , 71324 , 11040 , 425 , 0 , 341
+../data/censys.io/cisco_umbrella/certs_cisco_20200804.json , 52 , 52741 , 11353 , 4877 , 44 , 69067 , 10780 , 424 , 0 , 335
+../data/censys.io/cisco_umbrella/certs_cisco_20200901.json , 42 , 53744 , 11603 , 5042 , 44 , 70475 , 11070 , 411 , 0 , 349
+../data/censys.io/cisco_umbrella/certs_cisco_20201006.json , 63 , 64214 , 14228 , 6113 , 71 , 84689 , 13261 , 570 , 0 , 359
+../data/censys.io/cisco_umbrella/certs_cisco_20201103.json , 44 , 57246 , 11475 , 5554 , 53 , 74372 , 11316 , 458 , 0 , 347
+../data/censys.io/cisco_umbrella/certs_cisco_20201201.json , 54 , 57844 , 11905 , 5482 , 63 , 75348 , 11117 , 478 , 0 , 353
+../data/censys.io/cisco_umbrella/certs_cisco_20210101.json , 53 , 62994 , 13129 , 5829 , 47 , 82052 , 12395 , 538 , 0 , 357
+../data/censys.io/cisco_umbrella/certs_cisco_20210201.json , 48 , 59890 , 11432 , 5560 , 49 , 76979 , 10624 , 504 , 0 , 341
+../data/censys.io/cisco_umbrella/certs_cisco_20210301.json , 58 , 56084 , 10878 , 5263 , 34 , 72317 , 9999 , 431 , 0 , 335
+../data/censys.io/cisco_umbrella/certs_cisco_20210401.json , 62 , 67689 , 14042 , 7044 , 65 , 88902 , 12748 , 569 , 0 , 349
+../data/censys.io/cisco_umbrella/certs_cisco_20210501.json , 49 , 66686 , 13554 , 7020 , 61 , 87370 , 12122 , 542 , 0 , 336
+
+~Top 100M 
+../data/censys.io/certs_alexa/certs_alexa_20200602.json , 632 , 388071 , 82325 , 12418 , 579 , 484025 , 45738 , 3545 , 0 , 559
+../data/censys.io/certs_alexa/certs_alexa_20200707.json , 1339 , 350178 , 74475 , 11661 , 685 , 438338 , 39543 , 6104 , 0 , 529
+../data/censys.io/certs_alexa/certs_alexa_20200804.json , 629 , 318805 , 66524 , 11369 , 442 , 397769 , 38741 , 3252 , 0 , 508
+../data/censys.io/certs_alexa/certs_alexa_20200901.json , 582 , 323014 , 67606 , 11680 , 380 , 403262 , 37071 , 3057 , 0 , 538
+../data/censys.io/certs_alexa/certs_alexa_20201006.json , 816 , 480133 , 104064 , 16734 , 537 , 602284 , 58195 , 4258 , 0 , 574
+../data/censys.io/certs_alexa/certs_alexa_20201103.json , 498 , 339441 , 62940 , 12496 , 442 , 415817 , 41138 , 3177 , 0 , 512
+../data/censys.io/certs_alexa/certs_alexa_20201201.json , 1136 , 353411 , 73531 , 12878 , 580 , 441536 , 40064 , 6764 , 0 , 536
+../data/censys.io/certs_alexa/certs_alexa_20210101.json , 1350 , 414144 , 90538 , 15209 , 719 , 521960 , 46379 , 7177 , 0 , 571
+../data/censys.io/certs_alexa/certs_alexa_20210201.json , 1090 , 362439 , 75886 , 12994 , 693 , 453102 , 39501 , 6314 , 0 , 500
+../data/censys.io/certs_alexa/certs_alexa_20210301.json , 1006 , 364351 , 77777 , 12973 , 627 , 456734 , 41062 , 6024 , 0 , 510
+../data/censys.io/certs_alexa/certs_alexa_20210401.json , 809 , 469614 , 98482 , 17240 , 556 , 586701 , 50654 , 3714 , 0 , 538
+../data/censys.io/certs_alexa/certs_alexa_20210501.json , 607 , 440865 , 92548 , 13469 , 502 , 547991 , 45668 , 3166 , 2 , 517
+
+
+
+
+
+
+
+
