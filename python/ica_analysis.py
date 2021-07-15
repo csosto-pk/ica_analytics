@@ -96,7 +96,7 @@ if __name__ == "__main__":
       dmn = jobj['domain'] # The Alexa dataset has only domain. 
       rnk = int(jobj['alexa_rank']) # The Umbrella dataset has ranking and alexa_rank. Keep that one.
 
-    if rnk < srv_cnt: # Since data is not in ordered ranking we need to go through the whole set and 
+    if rnk < srv_cnt+1: # Since data is not in ordered ranking we need to go through the whole set and 
                       # ignore servers ranked higher than maximum server counter
       if not 'is_ca' in jobj: # If BasicConstraints CA: True/False  was not present in the cert then it was a leaf cert, not CA/ICA
         #print(dmn)
@@ -191,7 +191,7 @@ if __name__ == "__main__":
         rnk = int(jobj['cisco_rank']) # The Umbrella dataset has ranking and cisco_rank. Keep that one.
       else: 
         rnk = int(jobj['alexa_rank']) # The Umbrella dataset has ranking and alexa_rank. Keep that one.
-      if rnk < srv_cnt: # Since data is not in ordered ranking we need to go through the whole set and 
+      if rnk < srv_cnt+1: # Since data is not in ordered ranking we need to go through the whole set and 
                         # ignore servers ranked higher than maximum server counter
         if not 'subject_dn' in jobj: # If no subject_dn, the cert should not have been in the ica_set, disregard
           pass 
